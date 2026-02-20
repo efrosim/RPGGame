@@ -18,7 +18,7 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected float _moveSpeed;
     [SerializeField] protected float _rotSpeed;
 
-    private AnimatorController _controller;
+    private AnimatorController _animController;
     //Audio Controller?
 
     abstract protected void Dead();

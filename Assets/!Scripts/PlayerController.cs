@@ -6,6 +6,8 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : Character
 {
+    public static PlayerController Instance;
+
     private Rigidbody _rb;
     private bool _onReload = false;
 
@@ -19,6 +21,9 @@ public class PlayerController : Character
 
     private void Awake()
     {
+        if(Instance == null) Instance = this;
+        else Destroy(this);
+
         _rb = GetComponent<Rigidbody>();
     }
     private void OnEnable()
