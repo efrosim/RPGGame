@@ -3,7 +3,12 @@ guid: a0a5c086c77907f4db987481956b9ce7
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Buisson_02_Atlas
+    second: {fileID: 2100000, guid: d38e44967b6c3734eaa1d8860f105d33, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
