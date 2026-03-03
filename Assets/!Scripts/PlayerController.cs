@@ -18,6 +18,10 @@ public class PlayerController : Character
     [SerializeField] private InputActionReference _secondAttack;
     [SerializeField] private InputActionReference _rotation;
 
+    [Header("States")]
+    private StateMachine _SM;
+    
+
 
     private void Awake()
     {
