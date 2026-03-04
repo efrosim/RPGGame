@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public abstract class StateMachine
+public class StateMachine
 {
     public State _curState;
 

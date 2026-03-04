@@ -14,21 +14,18 @@ public abstract class Character : MonoBehaviour
     [SerializeField] protected int _HP;
     [SerializeField] protected int _dmgMelee;
     [SerializeField] protected int _dmgRange;
-    [SerializeField] protected float _reload;
-    [SerializeField] protected float _moveSpeed;
-    [SerializeField] protected float _rotSpeed;
+    public float _reload;
+    public float _moveSpeed;
+    public float _rotSpeed;
 
     private AnimatorController _animController;
     //Audio Controller?
-
-    abstract protected void Dead();
-    abstract protected void Attack();
 
     virtual public void GetDmg(int dmg)
     {
         _HP -= dmg;
         //Anim of get damage
-        if (_HP < 1) Dead();
+ //       if (_HP < 1) Dead();
     }
 
     virtual public int DealDmg(DamageType type)

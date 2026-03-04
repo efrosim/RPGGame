@@ -8,19 +8,21 @@ public class PlayerController : Character
 {
     public static PlayerController Instance;
 
-    private Rigidbody _rb;
-    private bool _onReload = false;
+    public Rigidbody _rb;
+    public Animator _animator;
+    public bool _onReload = false;
 
     [Header("Input")]
-    [SerializeField] private InputActionReference _move;
-    [SerializeField] private InputActionReference _shift;
-    [SerializeField] private InputActionReference _primeAttack;
-    [SerializeField] private InputActionReference _secondAttack;
-    [SerializeField] private InputActionReference _rotation;
+    public InputActionReference _move;
+    public InputActionReference _shift;
+    public InputActionReference _primeAttack;
+    public InputActionReference _secondAttack;
+    public InputActionReference _rotation;
 
     [Header("States")]
     private StateMachine _SM;
-    
+    public StatePlayerMove _statePlayerMove;
+    public StatePlayerMeleeAttack _statePlayerMeleeAttack;
 
 
     private void Awake()
@@ -29,6 +31,13 @@ public class PlayerController : Character
         else Destroy(this);
 
         _rb = GetComponent<Rigidbody>();
+
+        _SM = new StateMachine();
+
+        _statePlayerMeleeAttack = new StatePlayerMeleeAttack(this, _SM);
+        _statePlayerMove = new StatePlayerMove(this, _SM);
+
+        _SM.Init(_statePlayerMove);
     }
     private void OnEnable()
     {
@@ -46,58 +55,12 @@ public class PlayerController : Character
         _secondAttack.action.Disable();
         _rotation.action.Disable();
     }
-    protected override void Attack()
-    {
-        if(_onReload) return;
-
-        if (_primeAttack.action.IsPressed())
-        {
-            _onReload = true;
-            StartCoroutine(ReloadTimer());
-
-            Debug.Log("LMB");
-        }
-
-        if (_secondAttack.action.IsPressed())
-        {
-            _onReload = true;
-            StartCoroutine(ReloadTimer());
-
-            Debug.Log("RMB"); 
-        }
-    }
-    private void Rotation()
-    {
-        transform.Rotate(Vector3.up, _rotation.action.ReadValue<float>() * _rotSpeed, Space.World);
-    }
-    private void Movement()
-    {
-        if(_move.action.IsPressed())
-        {
-            float speedMod = 1f;
-            if (_shift.action.IsPressed())
-                speedMod = 1.5f;
-
-            Vector2 input = _move.action.ReadValue<Vector2>();
-            Vector3 dir = transform.forward * input.y * speedMod + transform.right * input.x * speedMod;
-
-            _rb.AddForce(dir * _moveSpeed, ForceMode.Force);
-        }
-    }
+    
     private void FixedUpdate()
     {
-        Rotation();
-        Movement();
-        Attack();
+        _SM._curState.LogicUpdate();
+        _SM._curState.Update();
+        //Attack();
     }
-    protected override void Dead()
-    {
-        return;
-    }
-    private IEnumerator ReloadTimer()
-    {
-        yield return new WaitForSeconds(_reload);
-        _onReload = false;
-        Debug.Log("End timer");
-    }
+ 
 }

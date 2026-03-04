@@ -44,7 +44,7 @@ public class Enemy : Character
                 Chase();
                 break;
             case EnemyState.attack:
-                Attack();
+                //Attack();
                 break;
         }
     }
@@ -52,7 +52,7 @@ public class Enemy : Character
     protected virtual void GetHit(int dmg)
     {
         _HP -= dmg;
-        if (_HP < 1) Dead();
+ //       if (_HP < 1) Dead();
     }
 
     protected virtual void Chase()
@@ -74,26 +74,21 @@ public class Enemy : Character
         _agent.destination = PlayerController.Instance.transform.position;
     }
 
-    protected override void Attack()
-    {
-        if(_readyForAttack)
-        {
-            _isAttack = true; //Выключить в анимации, в теории флаги все туда можно засунуть
-            _readyForAttack = false;
-            StartCoroutine(Timer(_reloadTime, _readyForAttack));
-            Debug.Log("EnemyAttack");
-        }
+    //protected override void Attack()
+    //{
+    //    if(_readyForAttack)
+    //    {
+    //        _isAttack = true; //Выключить в анимации, в теории флаги все туда можно засунуть
+    //        _readyForAttack = false;
+    //        StartCoroutine(Timer(_reloadTime, _readyForAttack));
+    //        Debug.Log("EnemyAttack");
+    //    }
 
-        if(!_isAttack)
-        {
-            if (Vector3.Distance(transform.position, PlayerController.Instance.transform.position) > _attackRange) ChangeState(EnemyState.chase);
-        }
-    }
-
-    protected override void Dead()
-    {
-        return;
-    }
+    //    if(!_isAttack)
+    //    {
+    //        if (Vector3.Distance(transform.position, PlayerController.Instance.transform.position) > _attackRange) ChangeState(EnemyState.chase);
+    //    }
+    //}
 
     protected IEnumerator Timer(int time, bool flag)
     {
