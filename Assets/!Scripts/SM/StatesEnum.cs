@@ -2,5 +2,8 @@ using UnityEngine;
 
 public enum AnimEnums
 {
-    Attack
+    Attack,
+    Chase,
+    Idle,
+    Dead
 }

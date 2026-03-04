@@ -65,5 +65,4 @@ public class PlayerController : Character
     {
         _SM._curState.EventHandler(state);
     }
- 
 }

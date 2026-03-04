@@ -2,76 +2,50 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum EnemyState
-{
-    idle,
-    chase,
-    attack,
-    dead
-}
-
 public class Enemy : Character
 {
-    //Потенциально абстрактный класс
-    [SerializeField] protected EnemyState _curState;
-    [SerializeField] protected float _attackRange;
-    [SerializeField] protected float _chaseRange;
-    [SerializeField] protected float _idleRange;
+    public float _attackRange;
+    public float _idleRange;
 
-    protected NavMeshAgent _agent;
+    public NavMeshAgent _agent;
     protected int _reloadTime;
     protected bool _readyForAttack;
     protected bool _isAttack;
 
+    [Header("State Machine")]
+    private StateMachine _SM;
+    public StateEnemyChase _chaseState;
+    public StateEnemyIdle _idleState;
+    public StateEnemyMeleeAttack _meleeAttackState;
+
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
-    }
 
-    public void ChangeState(EnemyState newstate)
-    {
-        _curState = newstate;
+        _SM = new StateMachine();
+
+        _chaseState = new StateEnemyChase(this, _SM);
+        _idleState = new StateEnemyIdle(this, _SM);
+        _meleeAttackState = new StateEnemyMeleeAttack(this, _SM);
+
+        _SM.Init(_idleState);
     }
 
     private void FixedUpdate()
     {
-        switch (_curState)
-        {
-            default:
-            case EnemyState.idle:
-                break;
-            case EnemyState.chase:
-                Chase();
-                break;
-            case EnemyState.attack:
-                //Attack();
-                break;
-        }
+        _SM._curState.LogicUpdate();
+        _SM._curState.Update();
     }
-    
+
+    public void EventHandler(AnimEnums state)
+    {
+        _SM._curState.EventHandler(state);
+    }
+
     protected virtual void GetHit(int dmg)
     {
         _HP -= dmg;
  //       if (_HP < 1) Dead();
-    }
-
-    protected virtual void Chase()
-    {
-        if (Vector3.Distance(transform.position, PlayerController.Instance.transform.position) > _idleRange)
-        {
-            ChangeState(EnemyState.idle);
-            _agent.isStopped = true;
-            return;
-        }
-
-        if (Vector3.Distance(transform.position, PlayerController.Instance.transform.position) < _attackRange)
-        {
-            ChangeState(EnemyState.attack);
-            _agent.isStopped = true;
-            return;
-        }
-
-        _agent.destination = PlayerController.Instance.transform.position;
     }
 
     //protected override void Attack()
@@ -89,10 +63,4 @@ public class Enemy : Character
     //        if (Vector3.Distance(transform.position, PlayerController.Instance.transform.position) > _attackRange) ChangeState(EnemyState.chase);
     //    }
     //}
-
-    protected IEnumerator Timer(int time, bool flag)
-    {
-        yield return new WaitForSeconds(time);
-        flag = true;
-    }
 }

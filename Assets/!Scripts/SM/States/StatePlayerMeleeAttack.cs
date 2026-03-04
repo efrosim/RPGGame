@@ -11,7 +11,6 @@ public class StatePlayerMeleeAttack : State
 
     public override void Enter()
     {
-        Debug.Log("Cur State: " + _SM._curState);
         Attack();
     }
     public override void Exit()
@@ -21,7 +20,6 @@ public class StatePlayerMeleeAttack : State
     public override void EventHandler(AnimEnums animstate)
     {
         _SM.ChangeState(_character._statePlayerMove);
-        _character._isAttackFinish = false;
     }
     public override void LogicUpdate()
     {

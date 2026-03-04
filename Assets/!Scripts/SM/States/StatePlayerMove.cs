@@ -10,7 +10,6 @@ public class StatePlayerMove : State
 
     public override void Enter()
     {
-        Debug.Log("Cur State: " + _SM._curState);
     }
     public override void Exit()
     {

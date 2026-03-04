@@ -21,14 +21,14 @@ public abstract class Character : MonoBehaviour
     private AnimatorController _animController;
     //Audio Controller?
 
-    virtual public void GetDmg(int dmg)
+    public virtual void GetDmg(int dmg)
     {
         _HP -= dmg;
         //Anim of get damage
  //       if (_HP < 1) Dead();
     }
 
-    virtual public int DealDmg(DamageType type)
+    public virtual int DealDmg(DamageType type)
     {
         switch (type)
         { 

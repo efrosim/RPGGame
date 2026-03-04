@@ -13,7 +13,7 @@ public abstract class State
 
     public virtual void Enter()
     {
-        Debug.Log("Cur State: " + _SM._curState);
+
     }
     public virtual void Exit()
     {
