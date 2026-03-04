@@ -10,7 +10,6 @@ public class PlayerController : Character
 
     public Rigidbody _rb;
     public Animator _animator;
-    public bool _onReload = false;
 
     [Header("Input")]
     public InputActionReference _move;
@@ -60,7 +59,11 @@ public class PlayerController : Character
     {
         _SM._curState.LogicUpdate();
         _SM._curState.Update();
-        //Attack();
+    }
+
+    public void EventHandler(AnimEnums state)
+    {
+        _SM._curState.EventHandler(state);
     }
  
 }

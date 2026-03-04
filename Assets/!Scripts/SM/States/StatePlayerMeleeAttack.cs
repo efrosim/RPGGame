@@ -12,34 +12,37 @@ public class StatePlayerMeleeAttack : State
     public override void Enter()
     {
         Debug.Log("Cur State: " + _SM._curState);
+        Attack();
     }
     public override void Exit()
     {
-
+        _character._animator.SetBool("IsAttack", false);
+    }
+    public override void EventHandler(AnimEnums animstate)
+    {
+        _SM.ChangeState(_character._statePlayerMove);
+        _character._isAttackFinish = false;
     }
     public override void LogicUpdate()
     {
-
+        
     }
     public override void Update()
     {
-        Attack();
+        
     }
 
     private void Attack()
     {
-        if (_character._onReload) return;
-
         if (_character._primeAttack.action.IsPressed())
         {
-            _character._onReload = true;
+            _character._animator.SetBool("IsAttack", true);
 
             Debug.Log("LMB");
         }
 
         if (_character._secondAttack.action.IsPressed())
         {
-            _character._onReload = true;
             
 
             Debug.Log("RMB");

@@ -16,6 +16,10 @@ public class StatePlayerMove : State
     {
 
     }
+    public override void EventHandler(AnimEnums animstate)
+    {
+
+    }
     public override void LogicUpdate()
     {
         if(_character._primeAttack.action.IsPressed())

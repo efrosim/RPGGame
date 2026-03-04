@@ -19,6 +19,10 @@ public abstract class State
     {
 
     }
+    public virtual void EventHandler(AnimEnums animstate)
+    {
+
+    }
     public virtual void LogicUpdate()
     {
 
