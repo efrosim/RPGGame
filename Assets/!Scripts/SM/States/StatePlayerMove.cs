@@ -37,18 +37,30 @@ public class StatePlayerMove : State
     {
         _character.transform.Rotate(Vector3.up, _character._rotation.action.ReadValue<float>() * _character._rotSpeed, Space.World);
     }
+    
     private void Movement()
     {
-        if (_character._move.action.IsPressed())
+        // Читаем ввод каждый кадр (если кнопки не нажаты, будет Vector2.zero)
+        Vector2 input = _character._move.action.ReadValue<Vector2>();
+    
+        float speedMod = 1f;
+        if (_character._shift.action.IsPressed())
+            speedMod = 1.5f;
+
+        // Вычисляем направление движения относительно поворота персонажа
+        Vector3 dir = _character.transform.forward * input.y + _character.transform.right * input.x;
+
+        // Нормализуем вектор, чтобы при движении по диагонали скорость не была выше
+        if (dir.magnitude > 1f)
         {
-            float speedMod = 1f;
-            if (_character._shift.action.IsPressed())
-                speedMod = 1.5f;
-
-            Vector2 input = _character._move.action.ReadValue<Vector2>();
-            Vector3 dir = input.y * speedMod * _character.transform.forward + input.x * speedMod * _character.transform.right;
-
-            _character._rb.AddForce(dir * _character._moveSpeed, ForceMode.Force);
+            dir.Normalize();
         }
+
+        // Вычисляем итоговую целевую скорость
+        Vector3 targetVelocity = dir * (_character._moveSpeed * speedMod);
+
+        // Применяем скорость к Rigidbody. 
+        // Важно: мы сохраняем текущую скорость по оси Y (_rb.velocity.y), чтобы гравитация и падение работали корректно!
+        _character._rb.linearVelocity = new Vector3(targetVelocity.x, _character._rb.linearVelocity.y, targetVelocity.z);
     }
 }
