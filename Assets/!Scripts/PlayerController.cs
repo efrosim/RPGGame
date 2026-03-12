@@ -9,7 +9,6 @@ public class PlayerController : Character
     public static PlayerController Instance;
 
     public Rigidbody _rb;
-    public Animator _animator;
 
     [Header("Input")]
     public InputActionReference _move;

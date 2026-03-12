@@ -1,31 +1,40 @@
 using UnityEngine;
 
-public class StateEnemyMeleeAttack : State
+public class StateEnemyMeleeAttack : StateEnemyAttack
 {
-    private new Enemy _character;
+    private new EnemyMelee _character;
     public StateEnemyMeleeAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (Enemy)character;
+        _character = (EnemyMelee)character;
     }
 
     public override void Enter()
     {
-        Debug.Log("Cur State: " + _SM._curState);
-        _character._agent.isStopped = true;
+        base.Enter();
     }
 
     public override void Exit()
     {
-
+        base.Exit();
     }
 
     public override void EventHandler(AnimEnums animstate)
     {
+        base.EventHandler(animstate);
 
+        if(animstate == AnimEnums.DealDmg) OnDealDmg();
     }
 
     public override void LogicUpdate()
     {
 
+    }
+
+    private void OnDealDmg()
+    {
+        if (Vector3.Distance(_character.transform.position, PlayerController.Instance.transform.position) < _character._attackRange)
+        {
+            _character.DealDmg();
+        }
     }
 }

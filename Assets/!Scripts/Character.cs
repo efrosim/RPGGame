@@ -8,36 +8,33 @@ public enum DamageType
     Range
 }
 
-public abstract class Character : MonoBehaviour
+public abstract class Character : MonoBehaviour, IHittable
 {
     [Header("Stats")]
     [SerializeField] protected int _HP;
-    [SerializeField] protected int _dmgMelee;
-    [SerializeField] protected int _dmgRange;
+    [SerializeField] protected int _MaxHP;
+    [SerializeField] protected int _dmg;
     public float _reload;
     public float _moveSpeed;
     public float _rotSpeed;
 
-    private AnimatorController _animController;
+    public Animator _animator;
     //Audio Controller?
 
-    public virtual void GetDmg(int dmg)
+    private void Start()
+    {
+        _HP = _MaxHP;
+    }
+
+    public virtual void GetHit(int dmg)
     {
         _HP -= dmg;
         //Anim of get damage
  //       if (_HP < 1) Dead();
     }
 
-    public virtual int DealDmg(DamageType type)
+    public virtual void DealDmg()
     {
-        switch (type)
-        { 
-            case DamageType.Melee:
-                return _dmgMelee;
-            case DamageType.Range:
-                return _dmgRange;
-            default:
-                return 0;
-        }
+        
     }
 }

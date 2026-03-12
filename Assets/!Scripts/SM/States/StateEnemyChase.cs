@@ -11,11 +11,13 @@ public class StateEnemyChase : State
     public override void Enter()
     {
         Debug.Log("Cur State: " + _SM._curState);
+        _character._agent.isStopped = false;
+        _character._animator.SetBool("IsChase", true);
     }
 
     public override void Exit()
     {
-
+        _character._animator.SetBool("IsChase", false);
     }
 
     public override void EventHandler(AnimEnums animstate)
@@ -31,7 +33,7 @@ public class StateEnemyChase : State
 
         if (Vector3.Distance(_character.transform.position, PlayerController.Instance.transform.position) < _character._attackRange)
         {
-            _SM.ChangeState(_character._meleeAttackState);
+            _SM.ChangeState(_character._attackState);
         }
     }
     public override void Update()
