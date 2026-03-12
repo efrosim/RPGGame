@@ -22,6 +22,7 @@ public class StateEnemyAttack : State
 
     public override void EventHandler(AnimEnums animstate)
     {
+        Debug.Log("Here");
         if (animstate == AnimEnums.AttackEnd) OnAttackEnd();
     }
 
@@ -32,6 +33,7 @@ public class StateEnemyAttack : State
 
     private void OnAttackEnd()
     {
+        Debug.Log("AttackEnd");
         _SM.ChangeState(_character._chaseState);
     }
 }
