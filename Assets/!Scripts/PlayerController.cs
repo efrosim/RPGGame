@@ -1,7 +1,6 @@
-using System.Collections;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.UIElements;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : Character
@@ -21,22 +20,21 @@ public class PlayerController : Character
     private StateMachine _SM;
     public StatePlayerMove _statePlayerMove;
     public StatePlayerMeleeAttack _statePlayerMeleeAttack;
-    public StatePlayerRangeAttack _statePlayerRangeAttack;
-
-    [Header("Range Attack")]
+    public StatePlayerRangeAttack _statePlayerRangeAttack;[Header("Range Attack & Cooldown")]
     public GameObject _shellPrefab;
     public Transform _shellSpawnPos;
-
-    [Header("Other")]
-    [SerializeField] private Vector3 _hitCube;
+    public float _magicCooldown = 2f;
+    [HideInInspector] public float _lastMagicTime = -10f;
+    public event Action<float> OnMagicCooldownChanged; // Событие для UI[Header("Melee Attack")]
+    [SerializeField] private Vector3 _hitCube = new Vector3(1.5f, 1.5f, 1.5f);
+    [SerializeField] private float _hitOffset = 1f; // Смещение зоны удара вперед
 
     private void Awake()
     {
         if(Instance == null) Instance = this;
-        else Destroy(this);
+        else Destroy(gameObject);
 
         _rb = GetComponent<Rigidbody>();
-
         _SM = new StateMachine();
 
         _statePlayerMeleeAttack = new StatePlayerMeleeAttack(this, _SM);
@@ -45,6 +43,7 @@ public class PlayerController : Character
 
         _SM.Init(_statePlayerMove);
     }
+
     private void OnEnable()
     {
         _move.action.Enable();
@@ -53,6 +52,7 @@ public class PlayerController : Character
         _secondAttack.action.Enable();
         _rotation.action.Enable();
     }
+
     private void OnDisable()
     {
         _move.action.Disable();
@@ -62,21 +62,48 @@ public class PlayerController : Character
         _rotation.action.Disable();
     }
     
+    private void Update()
+    {
+        // Обновляем UI кулдауна магии
+        if (Time.time < _lastMagicTime + _magicCooldown)
+        {
+            float progress = 1f - ((Time.time - _lastMagicTime) / _magicCooldown);
+            OnMagicCooldownChanged?.Invoke(progress);
+        }
+        else
+        {
+            OnMagicCooldownChanged?.Invoke(0f);
+        }
+    }
+
     private void FixedUpdate()
     {
+        if (IsDead) return; // Если мертв, стейт-машина не работает
         _SM._curState.LogicUpdate();
         _SM._curState.Update();
     }
 
     public void EventHandler(AnimEnums state)
     {
+        if (IsDead) return;
         _SM._curState.EventHandler(state);
     }
 
-    public override void GetHit(int dmg)
+    public override void GetHit(int dmg, DamageType type)
     {
-        base.GetHit(dmg);
-        if (_HP <= 0) GameController.Instance.GameLose();
+        if (IsDead) return;
+        base.GetHit(dmg, type);
+
+        if (_HP <= 0)
+        {
+            IsDead = true;
+            _animator.SetTrigger("Dead"); // Анимация смерти
+            GameController.Instance.GameLose();
+        }
+        else
+        {
+            _animator.SetTrigger("Hit"); // Микро-стан
+        }
     }
 
     public void RangeAttackSheelCreate()
@@ -87,12 +114,26 @@ public class PlayerController : Character
 
     public void MeleeDamageCheck()
     {
-        var hitColliders = Physics.OverlapBox(transform.position, _hitCube);
+        // Создаем зону поражения перед игроком
+        Vector3 hitCenter = transform.position + transform.forward * _hitOffset + Vector3.up;
+        Collider[] hitColliders = Physics.OverlapBox(hitCenter, _hitCube / 2, transform.rotation);
+        
+        foreach (var hit in hitColliders)
+        {
+            if (hit.gameObject == this.gameObject) continue; // Не бьем сами себя
+            
+            if (hit.TryGetComponent(out IHittable target))
+            {
+                target.GetHit(_dmg, DamageType.Melee); // Наносим физический урон
+            }
+        }
     }
 
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawCube(transform.position, _hitCube);
-    //}
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Vector3 hitCenter = transform.position + transform.forward * _hitOffset + Vector3.up;
+        Gizmos.matrix = Matrix4x4.TRS(hitCenter, transform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, _hitCube);
+    }
 }

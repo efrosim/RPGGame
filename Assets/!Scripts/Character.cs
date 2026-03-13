@@ -1,6 +1,4 @@
 using System;
-using System.Xml.Serialization;
-using UnityEditor.Animations;
 using UnityEngine;
 
 public enum DamageType
@@ -9,42 +7,42 @@ public enum DamageType
     Range
 }
 
-public abstract class Character : MonoBehaviour, IHittable
-{
-    [Header("Stats")]
+public abstract class Character : MonoBehaviour, IHittable, IHealth
+{[Header("Stats")]
     [SerializeField] protected int _HP;
     [SerializeField] protected int _MaxHP;
     [SerializeField] protected int _dmg;
-    public float _reload;
     public float _moveSpeed;
     public float _rotSpeed;
 
     public Animator _animator;
-    //Audio Controller?
 
-    // Событие, которое будет вызываться при изменении здоровья
+    public int HP => _HP;
+    public int MaxHP => _MaxHP;
+    public bool IsDead { get; protected set; } // Флаг смерти
+
     public event Action<float> OnHealthChanged; 
     
-    private void Start()
+    protected virtual void Start()
     {
         _HP = _MaxHP;
         OnHealthChanged?.Invoke(GetHealthNormalized()); 
     }
 
-    public virtual void GetHit(int dmg)
+    // Принимаем тип урона
+    public virtual void GetHit(int dmg, DamageType type)
     {
+        if (IsDead) return;
+
         _HP -= dmg;
         OnHealthChanged?.Invoke(GetHealthNormalized());
     }
 
-    public virtual void DealDmg()
-    {
-        
-    }
+    public virtual void DealDmg() { }
     
     public float GetHealthNormalized()
     {
-        if (_MaxHP == 0) return 0f; // Защита от деления на ноль
+        if (_MaxHP == 0) return 0f; 
         return (float)_HP / _MaxHP;
     }
 }

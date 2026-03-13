@@ -1,6 +1,5 @@
-using UnityEngine;
-
 public interface IHittable
 {
-    public void GetHit(int dmg);
+    // Передаем тип урона
+    void GetHit(int dmg, DamageType type);
 }

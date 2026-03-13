@@ -29,6 +29,12 @@ public class StatePlayerMove : State
         {
             _SM.ChangeState(_character._statePlayerRangeAttack);
         }
+        
+        if(_character._secondAttack.action.IsPressed() && Time.time >= _character._lastMagicTime + _character._magicCooldown)
+        {
+            _character._lastMagicTime = Time.time; // Запускаем кулдаун
+            _SM.ChangeState(_character._statePlayerRangeAttack);
+        }
     }
     public override void Update()
     {

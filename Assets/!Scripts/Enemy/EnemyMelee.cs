@@ -28,5 +28,13 @@ public class EnemyMelee : Enemy
     {
         base.EventHandler(state);
     }
+    
+    public override void DealDmg()
+    {
+        if (PlayerController.Instance != null && !PlayerController.Instance.IsDead)
+        {
+            PlayerController.Instance.GetHit(_dmg, DamageType.Melee);
+        }
+    }
 }
 

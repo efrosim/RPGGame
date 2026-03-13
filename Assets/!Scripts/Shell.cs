@@ -12,11 +12,9 @@ public class Shell : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Hit");
         if (collision.gameObject.TryGetComponent(out IHittable target))
         {
-            target.GetHit(_damage);
-            Debug.Log("DmdDealed");
+            target.GetHit(_damage, DamageType.Range); // Магический урон
         }
         Destroy(gameObject);
     }
