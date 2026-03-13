@@ -35,8 +35,6 @@ public abstract class Character : MonoBehaviour, IHittable
     {
         _HP -= dmg;
         OnHealthChanged?.Invoke(GetHealthNormalized());
-        //Anim of get damage
- //       if (_HP < 1) Dead();
     }
 
     public virtual void DealDmg()

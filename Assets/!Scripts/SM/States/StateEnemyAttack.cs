@@ -33,7 +33,6 @@ public class StateEnemyAttack : State
 
     private void OnAttackEnd()
     {
-        Debug.Log("AttackEnd");
         _SM.ChangeState(_character._chaseState);
     }
 }

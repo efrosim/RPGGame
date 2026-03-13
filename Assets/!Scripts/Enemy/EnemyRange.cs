@@ -30,14 +30,9 @@ public class EnemyRange : Enemy
         base.EventHandler(state);
     }
 
-    public int GetDmg()
-    {
-        return _dmg;
-    }
-
     public void RangeAttackSheelCreate()
     {
         GameObject shell = Instantiate(_shellPrefab, _shellSpawnPos.position, _shellSpawnPos.rotation);
-        shell.GetComponent<Shell>()._ownedBy = this;
+        shell.GetComponent<Shell>().SetDamage(_dmg);
     }
 }

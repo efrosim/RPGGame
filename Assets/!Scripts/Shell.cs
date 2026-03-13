@@ -3,15 +3,19 @@ using UnityEngine;
 public class Shell : MonoBehaviour
 {
     public float _speed;
+    private int _damage;
 
-    public EnemyRange _ownedBy;
+    public void SetDamage(int dmg)
+    {
+        _damage = dmg;
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log("Hit");
         if (collision.gameObject.TryGetComponent(out IHittable target))
         {
-            target.GetHit(_ownedBy.GetDmg());
+            target.GetHit(_damage);
             Debug.Log("DmdDealed");
         }
         Destroy(gameObject);

@@ -21,7 +21,14 @@ public class PlayerController : Character
     private StateMachine _SM;
     public StatePlayerMove _statePlayerMove;
     public StatePlayerMeleeAttack _statePlayerMeleeAttack;
+    public StatePlayerRangeAttack _statePlayerRangeAttack;
 
+    [Header("Range Attack")]
+    public GameObject _shellPrefab;
+    public Transform _shellSpawnPos;
+
+    [Header("Other")]
+    [SerializeField] private Vector3 _hitCube;
 
     private void Awake()
     {
@@ -34,6 +41,7 @@ public class PlayerController : Character
 
         _statePlayerMeleeAttack = new StatePlayerMeleeAttack(this, _SM);
         _statePlayerMove = new StatePlayerMove(this, _SM);
+        _statePlayerRangeAttack = new StatePlayerRangeAttack(this, _SM);
 
         _SM.Init(_statePlayerMove);
     }
@@ -64,4 +72,27 @@ public class PlayerController : Character
     {
         _SM._curState.EventHandler(state);
     }
+
+    public override void GetHit(int dmg)
+    {
+        base.GetHit(dmg);
+        if (_HP <= 0) GameController.Instance.GameLose();
+    }
+
+    public void RangeAttackSheelCreate()
+    {
+        GameObject shell = Instantiate(_shellPrefab, _shellSpawnPos.position, _shellSpawnPos.rotation);
+        shell.GetComponent<Shell>().SetDamage(_dmg);
+    }
+
+    public void MeleeDamageCheck()
+    {
+        var hitColliders = Physics.OverlapBox(transform.position, _hitCube);
+    }
+
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawCube(transform.position, _hitCube);
+    //}
 }

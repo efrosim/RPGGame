@@ -25,6 +25,10 @@ public class StatePlayerMove : State
         {
             _SM.ChangeState(_character._statePlayerMeleeAttack);
         }
+        if(_character._secondAttack.action.IsPressed())
+        {
+            _SM.ChangeState(_character._statePlayerRangeAttack);
+        }
     }
     public override void Update()
     {
