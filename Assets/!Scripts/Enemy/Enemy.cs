@@ -15,6 +15,9 @@ public abstract class Enemy : Character
     public StateEnemyIdle _idleState;
     public StateEnemyAttack _attackState;
 
+    public float _attackCooldown = 1.3f; // Время между атаками
+    [HideInInspector] public float _lastAttackTime;
+    
     protected virtual void FixedUpdate()
     {
         _SM._curState.LogicUpdate();

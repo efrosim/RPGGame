@@ -12,11 +12,14 @@ public class StateEnemyAttack : State
     {
         Debug.Log("Cur State: " + _SM._curState);
         _character._agent.isStopped = true;
-        _character._animator.SetBool("IsAttack", true);
+        
+        // Возвращаем Bool для того чтобы не происходило быстрое переключение
+        _character._animator.SetBool("IsAttack", true); 
     }
 
     public override void Exit()
     {
+        // Сбрасываем Bool, чтобы аниматор не зависал в атаке
         _character._animator.SetBool("IsAttack", false);
     }
 
@@ -33,7 +36,7 @@ public class StateEnemyAttack : State
 
     private void OnAttackEnd()
     {
+        _character._lastAttackTime = Time.time; // Запоминаем время окончания атаки
         _SM.ChangeState(_character._chaseState);
     }
 }
-
