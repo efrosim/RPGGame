@@ -15,6 +15,7 @@ public class EnemyMelee : Enemy
         _chaseState = new StateEnemyChase(this, _SM);
         _idleState = new StateEnemyIdle(this, _SM);
         _attackState = new StateEnemyMeleeAttack(this, _SM);
+        _deadState = new StateEnemyDead(this, _SM);
 
         _SM.Init(_idleState);
     }
@@ -31,7 +32,7 @@ public class EnemyMelee : Enemy
     
     public override void DealDmg()
     {
-        if (PlayerController.Instance != null && !PlayerController.Instance.IsDead)
+        if (PlayerController.Instance != null)
         {
             PlayerController.Instance.GetHit(_dmg, DamageType.Melee);
         }

@@ -12,7 +12,6 @@ public class StateEnemyChase : State
     {
         Debug.Log("Cur State: " + _SM._curState);
         _character._agent.isStopped = false;
-        // Убрали принудительное включение анимации бега отсюда, будем проверять скорость в Update
     }
 
     public override void Exit()
@@ -33,8 +32,8 @@ public class StateEnemyChase : State
         {
             _SM.ChangeState(_character._idleState);
         }
-        // Проверяем дистанцию и кулдаун
-        else if (distanceToPlayer <= _character._attackRange && Time.time >= _character._lastAttackTime + _character._attackCooldown)
+
+        else if (distanceToPlayer <= _character._attackRange)
         {
             _SM.ChangeState(_character._attackState);
         }

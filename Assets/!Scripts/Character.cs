@@ -19,7 +19,6 @@ public abstract class Character : MonoBehaviour, IHittable, IHealth
 
     public int HP => _HP;
     public int MaxHP => _MaxHP;
-    public bool IsDead { get; protected set; } // Флаг смерти
 
     public event Action<float> OnHealthChanged; 
     
@@ -32,8 +31,6 @@ public abstract class Character : MonoBehaviour, IHittable, IHealth
     // Принимаем тип урона
     public virtual void GetHit(int dmg, DamageType type)
     {
-        if (IsDead) return;
-
         _HP -= dmg;
         OnHealthChanged?.Invoke(GetHealthNormalized());
     }

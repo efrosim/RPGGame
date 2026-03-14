@@ -16,6 +16,7 @@ public class EnemyRange : Enemy
         _chaseState = new StateEnemyChase(this, _SM);
         _idleState = new StateEnemyIdle(this, _SM);
         _attackState = new StateEnemyRangeAttack(this, _SM);
+        _deadState = new StateEnemyDead(this, _SM);
 
         _SM.Init(_idleState);
     }

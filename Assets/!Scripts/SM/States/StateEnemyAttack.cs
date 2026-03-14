@@ -36,7 +36,6 @@ public class StateEnemyAttack : State
 
     private void OnAttackEnd()
     {
-        _character._lastAttackTime = Time.time; // Запоминаем время окончания атаки
         _SM.ChangeState(_character._chaseState);
     }
 }

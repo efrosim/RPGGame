@@ -64,7 +64,6 @@ public class PlayerController : Character
     
     private void Update()
     {
-        // Обновляем UI кулдауна магии
         if (Time.time < _lastMagicTime + _magicCooldown)
         {
             float progress = 1f - ((Time.time - _lastMagicTime) / _magicCooldown);
@@ -78,31 +77,26 @@ public class PlayerController : Character
 
     private void FixedUpdate()
     {
-        if (IsDead) return; // Если мертв, стейт-машина не работает
         _SM._curState.LogicUpdate();
         _SM._curState.Update();
     }
 
     public void EventHandler(AnimEnums state)
     {
-        if (IsDead) return;
         _SM._curState.EventHandler(state);
     }
 
     public override void GetHit(int dmg, DamageType type)
     {
-        if (IsDead) return;
         base.GetHit(dmg, type);
 
         if (_HP <= 0)
         {
-            IsDead = true;
-            _animator.SetTrigger("Dead"); // Анимация смерти
             GameController.Instance.GameLose();
         }
         else
         {
-            _animator.SetTrigger("Hit"); // Микро-стан
+            _animator.SetTrigger("Hit");
         }
     }
 
