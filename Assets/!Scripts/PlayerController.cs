@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(MeleeWeapon))][RequireComponent(typeof(RangeWeapon))]
 [RequireComponent(typeof(CooldownTimer))]
 // Добавили IGameOverTrigger только игроку
 public class PlayerController : Character, IGameOverTrigger
 {
+    
+    [Header("Weapons")][Tooltip("Объект с компонентом, реализующим IWeapon (Ближний бой)")]
+    [SerializeField] private GameObject _meleeWeaponObj;
+    [Tooltip("Объект с компонентом, реализующим IWeapon (Дальний бой)")]
+    [SerializeField] private GameObject _rangeWeaponObj;
+    
     public Rigidbody _rb { get; private set; }
-    public MeleeWeapon Melee { get; private set; } 
-    public RangeWeapon Range { get; private set; }
+    public IWeapon Melee { get; private set; } 
+    public IWeapon Range { get; private set; }
     public CooldownTimer MagicCooldown { get; private set; }
 
     [Header("Movement Stats")]
@@ -32,9 +36,11 @@ public class PlayerController : Character, IGameOverTrigger
     {
         base.Awake();
         _rb = GetComponent<Rigidbody>();
-        Melee = GetComponent<MeleeWeapon>();
-        Range = GetComponent<RangeWeapon>();
         MagicCooldown = GetComponent<CooldownTimer>();
+        
+        // Инициализируем оружие через интерфейсы
+        if (_meleeWeaponObj != null) Melee = _meleeWeaponObj.GetComponent<IWeapon>();
+        if (_rangeWeaponObj != null) Range = _rangeWeaponObj.GetComponent<IWeapon>();
         
         _SM = new StateMachine();
 

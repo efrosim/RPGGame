@@ -5,7 +5,7 @@ public class StateEnemyRangeAttack : StateEnemyAttack<EnemyRange>
     public override void OnAnimationEvent(AnimationEventType eventType)
     {
         if(eventType == AnimationEventType.DealDamage) 
-            _character.Range.Shoot();
+            _character.Range.Use();
         base.OnAnimationEvent(eventType);
     }
 }

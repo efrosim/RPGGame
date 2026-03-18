@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class RangeWeapon : MonoBehaviour
+public class RangeWeapon : MonoBehaviour, IWeapon
 {
     public int _dmg = 10;
     public GameObject _shellPrefab;
@@ -11,4 +11,6 @@ public class RangeWeapon : MonoBehaviour
         GameObject shell = Instantiate(_shellPrefab, _shellSpawnPos.position, _shellSpawnPos.rotation);
         shell.GetComponent<Shell>().SetDamage(_dmg);
     }
+    
+    public void Use() => Shoot();
 }

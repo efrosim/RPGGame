@@ -1,14 +1,16 @@
 using UnityEngine;
 
-[RequireComponent(typeof(RangeWeapon))]
+// Убираем RequireComponent
 public class EnemyRange : Enemy
 {
-    public RangeWeapon Range { get; private set; }
+    // Меняем тип на интерфейс
+    public IWeapon Range { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
-        Range = GetComponent<RangeWeapon>();
+        // Получаем интерфейс
+        Range = GetComponent<IWeapon>();
 
         AddState(new StateEnemyChase(this, _SM));
         AddState(new StateEnemyIdle(this, _SM));

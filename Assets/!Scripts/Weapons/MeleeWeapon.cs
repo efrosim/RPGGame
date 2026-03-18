@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 
-public class MeleeWeapon : MonoBehaviour
+public class MeleeWeapon : MonoBehaviour, IWeapon
 {
     public int _dmg = 10;[SerializeField] private Vector3 _hitCube = new Vector3(1.5f, 1.5f, 1.5f);
     [SerializeField] private float _hitOffset = 1f;
 
     [SerializeField] private int _maxTargets = 10;
     private Collider[] _hitColliders;
-
+    
     private void Awake()
     {
         _hitColliders = new Collider[_maxTargets];
     }
     
+    public void Use() => DealDamage();
     
     public void DealDamage()
     {

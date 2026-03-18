@@ -1,14 +1,16 @@
 using UnityEngine;
 
-[RequireComponent(typeof(MeleeWeapon))]
+// Убираем RequireComponent конкретного оружия
 public class EnemyMelee : Enemy
 {
-    public MeleeWeapon Melee { get; private set; }
+    // Меняем тип на интерфейс
+    public IWeapon Melee { get; private set; }
 
     protected override void Awake()
     {
         base.Awake(); 
-        Melee = GetComponent<MeleeWeapon>();
+        // Получаем любой компонент, который реализует IWeapon
+        Melee = GetComponent<IWeapon>();
 
         AddState(new StateEnemyChase(this, _SM));
         AddState(new StateEnemyIdle(this, _SM));
