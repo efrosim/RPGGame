@@ -2,69 +2,33 @@ using UnityEngine;
 
 public class StatePlayerMove : State<PlayerController> 
 {
-    // Конструктор честно просит PlayerController
-    public StatePlayerMove(PlayerController character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-    }
+    public StatePlayerMove(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void Enter()
-    {
-    }
-    public override void Exit()
-    {
-
-    }
-    public override void EventHandler(AnimEnums animstate)
-    {
-
-    }
     public override void LogicUpdate()
     {
-        if(_character._primeAttack.action.IsPressed())
+        if(_character._primeAttack.action.WasPressedThisFrame())
         {
             _SM.ChangeState(_character._statePlayerMeleeAttack);
         }
         
-        if(_character._secondAttack.action.IsPressed() && Time.time >= _character._lastMagicTime + _character._magicCooldown)
+        if(_character._secondAttack.action.WasPressedThisFrame() && _character.Combat.CanUseMagic())
         {
-            _character._lastMagicTime = Time.time; // Запускаем кулдаун
+            _character.Combat.StartMagicCooldown();
             _SM.ChangeState(_character._statePlayerRangeAttack);
         }
     }
-    public override void Update()
-    {
-        Rotation();
-        Movement();
-    }
 
-    private void Rotation()
+    public override void PhysicsUpdate()
     {
         _character.transform.Rotate(Vector3.up, _character._rotation.action.ReadValue<float>() * _character._rotSpeed, Space.World);
-    }
-    
-    private void Movement()
-    {
-        // Читаем ввод каждый кадр (если кнопки не нажаты, будет Vector2.zero)
+        
         Vector2 input = _character._move.action.ReadValue<Vector2>();
-    
-        float speedMod = 1f;
-        if (_character._shift.action.IsPressed())
-            speedMod = 1.5f;
+        float speedMod = _character._shift.action.IsPressed() ? 1.5f : 1f;
 
-        // Вычисляем направление движения относительно поворота персонажа
         Vector3 dir = _character.transform.forward * input.y + _character.transform.right * input.x;
+        if (dir.magnitude > 1f) dir.Normalize();
 
-        // Нормализуем вектор, чтобы при движении по диагонали скорость не была выше
-        if (dir.magnitude > 1f)
-        {
-            dir.Normalize();
-        }
-
-        // Вычисляем итоговую целевую скорость
         Vector3 targetVelocity = dir * (_character._moveSpeed * speedMod);
-
-        // Применяем скорость к Rigidbody. 
-        // Важно: мы сохраняем текущую скорость по оси Y (_rb.velocity.y), чтобы гравитация и падение работали корректно!
         _character._rb.linearVelocity = new Vector3(targetVelocity.x, _character._rb.linearVelocity.y, targetVelocity.z);
     }
 }

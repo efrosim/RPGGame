@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;[RequireComponent(typeof(Image))]
+using UnityEngine.UI;
+
+[RequireComponent(typeof(Image))]
 public class MagicCooldownUI : MonoBehaviour
 {
     private Image _cooldownImage;
+    
+    [SerializeField] private PlayerCombat _playerCombat; 
 
     private void Awake()
     {
@@ -12,14 +16,14 @@ public class MagicCooldownUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.OnMagicCooldownChanged += UpdateCooldownUI;
+        if (_playerCombat != null)
+            _playerCombat.OnMagicCooldownChanged += UpdateCooldownUI;
     }
 
     private void OnDisable()
     {
-        if (PlayerController.Instance != null)
-            PlayerController.Instance.OnMagicCooldownChanged -= UpdateCooldownUI;
+        if (_playerCombat != null)
+            _playerCombat.OnMagicCooldownChanged -= UpdateCooldownUI;
     }
 
     private void UpdateCooldownUI(float fillAmount)

@@ -1,10 +1,8 @@
-// Добавили <T> и ограничение, что T - это Character или его наследник
 public abstract class State<T> : IState where T : Character 
 {
-    protected T _character; // Теперь поле имеет точный тип (PlayerController, Enemy и т.д.)
+    protected T _character;
     protected StateMachine _SM;
 
-    // Конструктор сразу принимает нужный тип
     public State(T character, StateMachine stateMachine)
     {
         _character = character;
@@ -13,7 +11,7 @@ public abstract class State<T> : IState where T : Character
 
     public virtual void Enter() { }
     public virtual void Exit() { }
-    public virtual void EventHandler(AnimEnums animstate) { }
     public virtual void LogicUpdate() { }
-    public virtual void Update() { }
+    public virtual void PhysicsUpdate() { }
+    public virtual void OnAnimationEvent(AnimationEventType eventType) { }
 }

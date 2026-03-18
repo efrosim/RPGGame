@@ -1,17 +1,17 @@
 public class StateMachine
 {
-    public IState _curState; // Заменили State на IState
+    public IState _curState { get; private set; }
 
     public void Init(IState startState)
     {
         _curState = startState;
-        _curState.Enter();
+        _curState?.Enter();
     }
 
     public void ChangeState(IState newState)
     {
-        _curState?.Exit(); // Добавили знак вопроса на всякий случай
+        _curState?.Exit();
         _curState = newState;
-        _curState.Enter();
+        _curState?.Enter();
     }
 }

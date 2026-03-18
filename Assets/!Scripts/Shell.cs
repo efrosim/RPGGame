@@ -5,16 +5,13 @@ public class Shell : MonoBehaviour
     public float _speed;
     private int _damage;
 
-    public void SetDamage(int dmg)
-    {
-        _damage = dmg;
-    }
+    public void SetDamage(int dmg) => _damage = dmg;
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.TryGetComponent(out IHittable target))
         {
-            target.GetHit(_damage, DamageType.Range); // Магический урон
+            target.GetHit(_damage, DamageType.Range); 
         }
         Destroy(gameObject);
     }

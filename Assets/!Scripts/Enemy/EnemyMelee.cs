@@ -1,37 +1,30 @@
 using UnityEngine;
-using UnityEngine.AI;
 
 public class EnemyMelee : Enemy
 {
-    protected void Awake()
+    protected override void Awake()
     {
-        _agent = GetComponent<NavMeshAgent>();
-
-        _SM = new StateMachine();
-
+        base.Awake(); // LSP: Вызываем Awake из Enemy
         _chaseState = new StateEnemyChase(this, _SM);
         _idleState = new StateEnemyIdle(this, _SM);
+        _attackState = new StateEnemyMeleeAttack(this, _SM);
         _deadState = new StateEnemyDead(this, _SM);
 
         _SM.Init(_idleState);
     }
 
-    protected override void FixedUpdate()
+    public void DealDmg()
     {
-        base.FixedUpdate();
-    }
-
-    public override void EventHandler(AnimEnums state)
-    {
-        base.EventHandler(state);
-    }
-    
-    public override void DealDmg()
-    {
-        if (PlayerController.Instance != null)
+        if (Target != null && Target.IsValidTarget)
         {
-            PlayerController.Instance.GetHit(_dmg, DamageType.Melee);
+            // Простая проверка дистанции для ближнего боя
+            if (Vector3.Distance(transform.position, Target.TargetPosition) <= _attackRange)
+            {
+                if (Target is IHittable hittable)
+                {
+                    hittable.GetHit(_dmg, DamageType.Melee);
+                }
+            }
         }
     }
 }
-
