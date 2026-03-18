@@ -1,11 +1,10 @@
 using UnityEngine;
 
-public class StatePlayerMove : State
+public class StatePlayerMove : State<PlayerController> 
 {
-    private new PlayerController _character;
-    public StatePlayerMove(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    // Конструктор честно просит PlayerController
+    public StatePlayerMove(PlayerController character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (PlayerController)character;
     }
 
     public override void Enter()
@@ -24,10 +23,6 @@ public class StatePlayerMove : State
         if(_character._primeAttack.action.IsPressed())
         {
             _SM.ChangeState(_character._statePlayerMeleeAttack);
-        }
-        if(_character._secondAttack.action.IsPressed())
-        {
-            _SM.ChangeState(_character._statePlayerRangeAttack);
         }
         
         if(_character._secondAttack.action.IsPressed() && Time.time >= _character._lastMagicTime + _character._magicCooldown)

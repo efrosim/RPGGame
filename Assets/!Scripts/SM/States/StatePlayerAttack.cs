@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class StatePlayerAttack : State
+public class StatePlayerAttack : State<PlayerController>
 {
-    private new PlayerController _character;
-    public StatePlayerAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    public StatePlayerAttack(PlayerController character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (PlayerController)character;
     }
 
     public override void Enter()

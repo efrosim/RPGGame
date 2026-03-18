@@ -1,11 +1,9 @@
 using UnityEngine;
 
-public class StateEnemyRangeAttack : StateEnemyAttack
+public class StateEnemyRangeAttack : StateEnemyAttack<EnemyRange>
 {
-    private new EnemyRange _character;
-    public StateEnemyRangeAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    public StateEnemyRangeAttack(EnemyRange character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (EnemyRange)character;
     }
 
     public override void Enter()
@@ -30,9 +28,9 @@ public class StateEnemyRangeAttack : StateEnemyAttack
     {
 
     }
-
     private void OnShellFire()
     {
+        // _character автоматически EnemyRange
         _character.RangeAttackSheelCreate();
     }
 

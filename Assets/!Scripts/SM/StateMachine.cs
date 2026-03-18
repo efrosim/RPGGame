@@ -1,18 +1,16 @@
-using UnityEngine;
-
 public class StateMachine
 {
-    public State _curState;
+    public IState _curState; // Заменили State на IState
 
-    public void Init(State startState)
+    public void Init(IState startState)
     {
         _curState = startState;
         _curState.Enter();
     }
 
-    public void ChangeState(State newState)
+    public void ChangeState(IState newState)
     {
-        _curState.Exit();
+        _curState?.Exit(); // Добавили знак вопроса на всякий случай
         _curState = newState;
         _curState.Enter();
     }

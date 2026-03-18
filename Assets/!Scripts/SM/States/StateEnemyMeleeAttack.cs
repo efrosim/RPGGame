@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class StateEnemyMeleeAttack : StateEnemyAttack
+public class StateEnemyMeleeAttack : StateEnemyAttack<EnemyMelee>
 {
-    private new EnemyMelee _character;
-    public StateEnemyMeleeAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    public StateEnemyMeleeAttack(EnemyMelee character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (EnemyMelee)character;
     }
+
 
     public override void Enter()
     {
@@ -32,6 +31,8 @@ public class StateEnemyMeleeAttack : StateEnemyAttack
 
     private void OnDealDmg()
     {
+        // _character здесь автоматически распознается как EnemyMelee!
+        // Поэтому метод DealDmg() доступен без всяких кастов.
         if (Vector3.Distance(_character.transform.position, PlayerController.Instance.transform.position) < _character._attackRange)
         {
             _character.DealDmg();

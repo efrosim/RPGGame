@@ -1,11 +1,9 @@
 using UnityEngine;
 
-public class StateEnemyChase : State
+public class StateEnemyChase : State<Enemy>
 {
-    private new Enemy _character;
-    public StateEnemyChase(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    public StateEnemyChase(Enemy character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (Enemy)character;
     }
 
     public override void Enter()

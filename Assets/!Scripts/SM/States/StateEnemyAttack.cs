@@ -1,20 +1,18 @@
 using UnityEngine;
 
-public class StateEnemyAttack : State
+public class StateEnemyAttack<T> : State<T> where T : Enemy
 {
-    private new Enemy _character;
-    public StateEnemyAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    public StateEnemyAttack(T character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (Enemy)character;
     }
-
+    
     public override void Enter()
     {
         Debug.Log("Cur State: " + _SM._curState);
         _character._agent.isStopped = true;
         
         // Возвращаем Bool для того чтобы не происходило быстрое переключение
-        _character._animator.SetBool("IsAttack", true); 
+        _character._animator.SetBool("IsAttack", true);
     }
 
     public override void Exit()

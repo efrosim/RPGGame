@@ -12,7 +12,10 @@ public abstract class Enemy : Character
     protected StateMachine _SM;
     public StateEnemyChase _chaseState;
     public StateEnemyIdle _idleState;
-    public StateEnemyAttack _attackState;
+    
+    // ИСПРАВЛЕНО ЗДЕСЬ: Заменили StateEnemyAttack на IState
+    public IState _attackState; 
+    
     public StateEnemyDead _deadState;
     
     protected virtual void FixedUpdate()

@@ -3,10 +3,8 @@ using UnityEngine;
 
 public class StatePlayerMeleeAttack : StatePlayerAttack
 {
-    private new PlayerController _character;
-    public StatePlayerMeleeAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    public StatePlayerMeleeAttack(PlayerController character, StateMachine stateMachine) : base(character, stateMachine)
     {
-        _character = (PlayerController)character;
     }
 
     public override void Enter()
