@@ -1,14 +1,17 @@
 ﻿using UnityEngine;
 
-// SRP: Отдельный компонент для сенсорики
 public class TargetScanner : MonoBehaviour
 {
     public float _detectionRadius = 15f;
     public LayerMask _targetLayer;
     
-    // Оптимизация: NonAlloc массив
-    private Collider[] _hits = new Collider[5];
+    [SerializeField] private int _maxTargets = 5;
+    private Collider[] _hits;
 
+    private void Awake()
+    {
+        _hits = new Collider[_maxTargets];
+    }
     public ITargetable Scan()
     {
         int count = Physics.OverlapSphereNonAlloc(transform.position, _detectionRadius, _hits, _targetLayer);

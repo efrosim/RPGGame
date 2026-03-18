@@ -6,6 +6,6 @@ public class StateEnemyDead : State<Enemy>
     {
         _character._agent.isStopped = true;
         _character._agent.enabled = false;
-        _character.OnDead();
+        // Уничтожение объекта теперь безопасно вызывается через событие OnDeadEvent в самом Enemy
     }
 }

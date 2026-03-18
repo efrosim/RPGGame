@@ -14,12 +14,13 @@ public class StateEnemyIdle : State<Enemy>
         if (_scanTimer >= 0.2f) 
         {
             _scanTimer = 0f;
-            _character.Target = _character.Scanner.Scan(); // SRP: Делегируем поиск сканеру
+            _character.Target = _character.Scanner.Scan();
         }
 
         if (_character.Target != null)
         {
-            _SM.ChangeState(_character._chaseState);
+            // ИСПРАВЛЕНО: Теперь используем обобщенный метод вместо жесткой ссылки на поле
+            _character.ChangeState<StateEnemyChase>();
         }
     }
 }

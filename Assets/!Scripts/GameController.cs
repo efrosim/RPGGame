@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public static GameController Instance; // Оставим этот синглтон, если он нужен для UI кнопок рестарта
+    public static GameController Instance;
 
     [SerializeField] private GameObject _restartCanvas;
-    
-    // ИСПРАВЛЕНО: Добавили ссылку на игрока для подписки на его смерть
-    [SerializeField] private Character _player; 
+    [SerializeField] private GameObject _gameOverTriggerObject; // DIP: Зависим от абстракции
+
+    private IGameOverTrigger _trigger;
 
     private void Awake()
     {
@@ -19,14 +19,9 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        // ИСПРАВЛЕНО: Подписываемся на событие смерти через нормальную ссылку
-        if (_player != null)
+        if (_gameOverTriggerObject != null && _gameOverTriggerObject.TryGetComponent(out _trigger))
         {
-            _player.OnDeadEvent += GameLose;
-        }
-        else
-        {
-            Debug.LogWarning("Игрок не назначен в GameController!");
+            _trigger.OnDeadEvent += GameLose;
         }
     }
 

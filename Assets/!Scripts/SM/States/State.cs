@@ -12,6 +12,4 @@ public abstract class State<T> : IState where T : Character
     public virtual void Enter() { }
     public virtual void Exit() { }
     public virtual void LogicUpdate() { }
-    public virtual void PhysicsUpdate() { }
-    public virtual void OnAnimationEvent(AnimationEventType eventType) { }
 }

@@ -1,27 +1,17 @@
 using UnityEngine;
 
-public class StatePlayerMove : State<PlayerController> 
+public class StatePlayerMove : State<PlayerController>, IPhysicsState 
 {
     public StatePlayerMove(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
 
     public override void LogicUpdate()
     {
-        if(_character._primeAttack.action.WasPressedThisFrame())
-        {
-            _SM.ChangeState(_character._statePlayerMeleeAttack);
-        }
-        
-        if(_character._secondAttack.action.WasPressedThisFrame() && _character.Combat.CanUseMagic())
-        {
-            _character.Combat.StartMagicCooldown();
-            _SM.ChangeState(_character._statePlayerRangeAttack);
-        }
+        // Пусто. Логика переключения атак теперь безопасно работает через события в PlayerController
     }
 
-    public override void PhysicsUpdate()
+    public void PhysicsUpdate()
     {
         _character.transform.Rotate(Vector3.up, _character._rotation.action.ReadValue<float>() * _character._rotSpeed, Space.World);
-        
         Vector2 input = _character._move.action.ReadValue<Vector2>();
         float speedMod = _character._shift.action.IsPressed() ? 1.5f : 1f;
 

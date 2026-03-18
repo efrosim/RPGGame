@@ -5,9 +5,7 @@ public class StatePlayerMeleeAttack : StatePlayerAttack
     public override void OnAnimationEvent(AnimationEventType eventType)
     {
         if (eventType == AnimationEventType.DealDamage)
-        {
-            _character.Combat.MeleeDamageCheck();
-        }
+            _character.Melee.DealDamage();
         base.OnAnimationEvent(eventType); 
     }
 }

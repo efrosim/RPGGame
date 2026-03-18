@@ -5,8 +5,7 @@ using UnityEngine.UI;
 public class MagicCooldownUI : MonoBehaviour
 {
     private Image _cooldownImage;
-    
-    [SerializeField] private PlayerCombat _playerCombat; 
+    [SerializeField] private CooldownTimer _cooldownTimer; 
 
     private void Awake()
     {
@@ -16,14 +15,14 @@ public class MagicCooldownUI : MonoBehaviour
 
     private void OnEnable()
     {
-        if (_playerCombat != null)
-            _playerCombat.OnMagicCooldownChanged += UpdateCooldownUI;
+        if (_cooldownTimer != null)
+            _cooldownTimer.OnCooldownProgress += UpdateCooldownUI;
     }
 
     private void OnDisable()
     {
-        if (_playerCombat != null)
-            _playerCombat.OnMagicCooldownChanged -= UpdateCooldownUI;
+        if (_cooldownTimer != null)
+            _cooldownTimer.OnCooldownProgress -= UpdateCooldownUI;
     }
 
     private void UpdateCooldownUI(float fillAmount)

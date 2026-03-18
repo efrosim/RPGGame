@@ -5,9 +5,7 @@ public class StateEnemyMeleeAttack : StateEnemyAttack<EnemyMelee>
     public override void OnAnimationEvent(AnimationEventType eventType)
     {
         if(eventType == AnimationEventType.DealDamage) 
-        {
-            _character.DealDmg();
-        }
+            _character.Melee.DealDamage();
         base.OnAnimationEvent(eventType);
     }
 }

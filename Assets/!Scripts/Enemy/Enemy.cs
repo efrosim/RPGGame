@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -5,44 +7,52 @@ using UnityEngine.AI;
 public abstract class Enemy : Character
 {
     [Header("Combat Settings")]
-    public int _dmg; 
     public float _attackRange;
     public float _idleRange;
 
     public NavMeshAgent _agent { get; private set; }
     public TargetScanner Scanner { get; private set; }
-    public ITargetable Target { get; set; } // DIP: Зависим от интерфейса
+    public ITargetable Target { get; set; } 
 
     protected StateMachine _SM;
-    public StateEnemyChase _chaseState;
-    public StateEnemyIdle _idleState;
-    public IState _attackState; 
-    public StateEnemyDead _deadState;
+    private Dictionary<Type, IState> _states = new Dictionary<Type, IState>();
 
     protected override void Awake() 
     {
-        base.Awake(); // LSP: Обязательный вызов базового метода
+        base.Awake(); 
         _agent = GetComponent<NavMeshAgent>();
         Scanner = GetComponent<TargetScanner>();
         _SM = new StateMachine();
     }
 
-    protected virtual void Update() => _SM._curState?.LogicUpdate();
-    protected virtual void FixedUpdate() => _SM._curState?.PhysicsUpdate();
-    
-    public virtual void OnAnimationEvent(AnimationEventType eventType) => _SM._curState?.OnAnimationEvent(eventType);
-
-    public override void GetHit(int dmg, DamageType type)
+    protected override void Start()
     {
-        if (_HP <= 0) return; // LSP: Защита от двойной смерти
-        
-        base.GetHit(dmg, type);
-        
-        if (_HP <= 0) 
-        {
-            _SM.ChangeState(_deadState);
-        }
+        base.Start();
+        // Подписываемся на собственную смерть
+        OnDeadEvent += HandleDeath;
     }
 
-    public void OnDead() => Destroy(gameObject, 2.5f);
+    protected void AddState(IState state) => _states[state.GetType()] = state;
+
+    public void ChangeState<T>() where T : IState
+    {
+        if (_states.TryGetValue(typeof(T), out IState state))
+            _SM.ChangeState(state);
+    }
+
+    public abstract void TransitionToAttackState();
+
+    protected virtual void Update() => _SM.LogicUpdate();
+    protected virtual void FixedUpdate() => _SM.PhysicsUpdate();
+    public virtual void OnAnimationEvent(AnimationEventType eventType) => _SM.OnAnimationEvent(eventType);
+
+    protected override void OnHitReceived(int dmg, DamageType type)
+    {
+        if (_HP <= 0) ChangeState<StateEnemyDead>();
+    }
+
+    private void HandleDeath()
+    {
+        Destroy(gameObject, 2.5f);
+    }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class StateEnemyChase : State<Enemy>
+public class StateEnemyChase : State<Enemy>, IPhysicsState
 {
     public StateEnemyChase(Enemy character, StateMachine stateMachine) : base(character, stateMachine) { }
 
@@ -12,22 +12,21 @@ public class StateEnemyChase : State<Enemy>
         if (_character.Target == null || !_character.Target.IsValidTarget) 
         {
             _character.Target = null;
-            _SM.ChangeState(_character._idleState);
+            _character.ChangeState<StateEnemyIdle>();
             return;
         }
 
         float distanceToTarget = Vector3.Distance(_character.transform.position, _character.Target.TargetPosition);
 
         if (distanceToTarget > _character._idleRange)
-            _SM.ChangeState(_character._idleState);
+            _character.ChangeState<StateEnemyIdle>();
         else if (distanceToTarget <= _character._attackRange)
-            _SM.ChangeState(_character._attackState);
+            _character.TransitionToAttackState(); // OCP: Вызов абстрактного метода
     }
     
-    public override void PhysicsUpdate()
+    public void PhysicsUpdate()
     {
         if (_character.Target == null) return;
-
         _character._agent.destination = _character.Target.TargetPosition;
         _character._animator.SetBool("IsChase", _character._agent.velocity.sqrMagnitude >= 0.01f);
     }

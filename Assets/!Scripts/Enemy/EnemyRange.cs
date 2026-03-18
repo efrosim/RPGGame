@@ -1,25 +1,22 @@
 using UnityEngine;
 
+[RequireComponent(typeof(RangeWeapon))]
 public class EnemyRange : Enemy
 {
-    [Header("Range Attack")]
-    public GameObject _shellPrefab;
-    public Transform _shellSpawnPos;
+    public RangeWeapon Range { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
-        _chaseState = new StateEnemyChase(this, _SM);
-        _idleState = new StateEnemyIdle(this, _SM);
-        _attackState = new StateEnemyRangeAttack(this, _SM);
-        _deadState = new StateEnemyDead(this, _SM);
+        Range = GetComponent<RangeWeapon>();
 
-        _SM.Init(_idleState);
+        AddState(new StateEnemyChase(this, _SM));
+        AddState(new StateEnemyIdle(this, _SM));
+        AddState(new StateEnemyRangeAttack(this, _SM));
+        AddState(new StateEnemyDead(this, _SM));
+
+        ChangeState<StateEnemyIdle>();
     }
 
-    public void RangeAttackSheelCreate()
-    {
-        GameObject shell = Instantiate(_shellPrefab, _shellSpawnPos.position, _shellSpawnPos.rotation);
-        shell.GetComponent<Shell>().SetDamage(_dmg);
-    }
+    public override void TransitionToAttackState() => ChangeState<StateEnemyRangeAttack>();
 }
