@@ -21,7 +21,7 @@ public class StateEnemyChase : State<Enemy>, IPhysicsState
         if (distanceToTarget > _character._idleRange)
             _character.ChangeState<StateEnemyIdle>();
         else if (distanceToTarget <= _character._attackRange)
-            _character.TransitionToAttackState(); // OCP: Вызов абстрактного метода
+            _character.TransitionToAttackState(); 
     }
     
     public void PhysicsUpdate()

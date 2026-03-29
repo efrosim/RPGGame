@@ -1,9 +1,9 @@
 using System;
 using UnityEngine;
 
-// Убрали IGameOverTrigger отсюда. Теперь враги не могут завершить игру.
 public abstract class Character : MonoBehaviour, IHittable, IHealth, ITargetable
-{[Header("Stats")]
+{
+    [Header("Stats")]
     [SerializeField] protected int _HP;
     [SerializeField] protected int _MaxHP;
     
@@ -35,6 +35,17 @@ public abstract class Character : MonoBehaviour, IHittable, IHealth, ITargetable
 
         OnHitReceived(dmg, type);
 
+        if (_HP <= 0) 
+        {
+            OnDeadEvent?.Invoke();
+        }
+    }
+
+    public void SetHealth(int hp)
+    {
+        _HP = Mathf.Clamp(hp, 0, _MaxHP);
+        OnHealthChanged?.Invoke(GetHealthNormalized());
+        
         if (_HP <= 0) 
         {
             OnDeadEvent?.Invoke();

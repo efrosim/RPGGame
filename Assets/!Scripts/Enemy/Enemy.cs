@@ -6,6 +6,8 @@ using UnityEngine.AI;
 [RequireComponent(typeof(TargetScanner))]
 public abstract class Enemy : Character
 {
+    public string UniqueId { get; private set; }
+
     [Header("Combat Settings")]
     public float _attackRange;
     public float _idleRange;
@@ -23,12 +25,18 @@ public abstract class Enemy : Character
         _agent = GetComponent<NavMeshAgent>();
         Scanner = GetComponent<TargetScanner>();
         _SM = new StateMachine();
+        
+        UniqueId = $"{gameObject.name}_{transform.position.ToString("F2")}";
+    }
+    
+    public void SetDynamicId(string newId)
+    {
+        UniqueId = newId;
     }
 
     protected override void Start()
     {
         base.Start();
-        // Подписываемся на собственную смерть
         OnDeadEvent += HandleDeath;
     }
 

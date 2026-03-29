@@ -12,14 +12,16 @@ public class GameplayEntryPoint : MonoBehaviour
 
     private void Start()
     {
-        // Получаем сервисы
-        var saveService = ServiceLocator.Get<ISaveService>();
+        // Получаем Репозиторий из локатора
+        var saveRepository = ServiceLocator.Get<ISaveRepository>();
         var sceneLoader = ServiceLocator.Get<ISceneLoaderService>();
 
-        // Собираем MVC паузы
-        _pauseController = new PauseMenuController(_pauseView, saveService, sceneLoader, _player, _mainMenuSceneIndex);
+        // Создаем Интерактор (Бизнес-логика)
+        ISaveInteractor saveInteractor = new SaveInteractor(saveRepository, _player);
 
-        // Настраиваем инпут для паузы
+        // Собираем MVC паузы, передавая Интерактор
+        _pauseController = new PauseMenuController(_pauseView, saveInteractor, sceneLoader, _mainMenuSceneIndex);
+
         _pauseAction.action.Enable();
         _pauseAction.action.performed += ctx => _pauseController.TogglePause();
     }

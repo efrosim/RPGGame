@@ -5,7 +5,7 @@ public class StatePlayerMeleeAttack : StatePlayerAttack
     public override void OnAnimationEvent(AnimationEventType eventType)
     {
         if (eventType == AnimationEventType.DealDamage)
-            _character.Melee.Use(); // ИСПРАВЛЕНО: вызываем Use() из интерфейса IWeapon
+            _character.Melee.Use(); 
         base.OnAnimationEvent(eventType); 
     }
 }

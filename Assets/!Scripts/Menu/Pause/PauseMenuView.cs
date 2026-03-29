@@ -2,7 +2,6 @@
 using UnityEngine.UI;
 using System;
 
-// --- VIEW (MonoBehaviour) ---
 public class PauseMenuView : MonoBehaviour
 {
     public GameObject _pausePanel;

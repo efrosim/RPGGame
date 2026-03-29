@@ -19,7 +19,6 @@ public class StateEnemyIdle : State<Enemy>
 
         if (_character.Target != null)
         {
-            // ИСПРАВЛЕНО: Теперь используем обобщенный метод вместо жесткой ссылки на поле
             _character.ChangeState<StateEnemyChase>();
         }
     }

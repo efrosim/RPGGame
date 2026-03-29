@@ -15,19 +15,28 @@ public class UnityAudioService : IAudioService
     public float GetVolume() => PlayerPrefs.GetFloat(VolumeKey, 1f);
 }
 
-public class JsonSaveService : ISaveService
+public class UnitySceneLoader : ISceneLoaderService
 {
-    private const string SaveKey = "SaveData";
+    public void LoadScene(int buildIndex)
+    {
+        Time.timeScale = 1f; 
+        SceneManager.LoadScene(buildIndex);
+    }
+}
 
-    public void SaveGame(SaveData data)
+public class JsonSaveRepository : ISaveRepository
+{
+    private const string SaveKey = "GameSaveData";
+
+    public void Save(SaveData data)
     {
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(SaveKey, json);
         PlayerPrefs.Save();
-        Debug.Log("Игра сохранена: " + json);
+        Debug.Log("Данные сохранены в репозиторий: " + json);
     }
 
-    public SaveData LoadGame()
+    public SaveData Load()
     {
         if (HasSave())
         {
@@ -38,13 +47,4 @@ public class JsonSaveService : ISaveService
     }
 
     public bool HasSave() => PlayerPrefs.HasKey(SaveKey);
-}
-
-public class UnitySceneLoader : ISceneLoaderService
-{
-    public void LoadScene(int buildIndex)
-    {
-        Time.timeScale = 1f; // Сбрасываем паузу при загрузке
-        SceneManager.LoadScene(buildIndex);
-    }
 }

@@ -16,7 +16,6 @@
         _model = new MainMenuModel { CurrentVolume = _audioService.GetVolume() };
         _view.SetVolumeSlider(_model.CurrentVolume);
 
-        // Подписка на события View
         _view.OnPlayClicked += HandlePlay;
         _view.OnVolumeChanged += HandleVolumeChange;
     }

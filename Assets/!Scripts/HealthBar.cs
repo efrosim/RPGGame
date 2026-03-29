@@ -8,13 +8,12 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private GameObject _healthSourceObj; 
     
     private IHealth _healthSource;
-    private Camera _mainCamera; // Вернули ссылку на камеру
+    private Camera _mainCamera; 
 
     private void Awake()
     {
         _mainCamera = Camera.main;
         
-        // Получаем абстракцию IHealth
         if (_healthSourceObj != null)
             _healthSource = _healthSourceObj.GetComponent<IHealth>();
         else
@@ -29,7 +28,7 @@ public class HealthBar : MonoBehaviour
 
     private void OnDisable()
     {
-        if (_healthSource != null) // ИСПРАВЛЕНО: используем _healthSource вместо _character
+        if (_healthSource != null) 
         {
             _healthSource.OnHealthChanged -= UpdateHealthBar;
         }
@@ -37,7 +36,7 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
-        if (_healthSource != null) // ИСПРАВЛЕНО: используем _healthSource вместо _character
+        if (_healthSource != null) 
         {
             UpdateHealthBar(_healthSource.GetHealthNormalized());
         }

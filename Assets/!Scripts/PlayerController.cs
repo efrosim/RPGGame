@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CooldownTimer))]
-// Добавили IGameOverTrigger только игроку
+
 public class PlayerController : Character, IGameOverTrigger
 {
     
@@ -38,7 +38,6 @@ public class PlayerController : Character, IGameOverTrigger
         _rb = GetComponent<Rigidbody>();
         MagicCooldown = GetComponent<CooldownTimer>();
         
-        // Инициализируем оружие через интерфейсы
         if (_meleeWeaponObj != null) Melee = _meleeWeaponObj.GetComponent<IWeapon>();
         if (_rangeWeaponObj != null) Range = _rangeWeaponObj.GetComponent<IWeapon>();
         
@@ -67,7 +66,6 @@ public class PlayerController : Character, IGameOverTrigger
         _secondAttack.action.Enable(); 
         _rotation.action.Enable();
 
-        // Подписываемся на атаки здесь (OCP)
         _primeAttack.action.performed += OnPrimeAttack;
         _secondAttack.action.performed += OnSecondAttack;
     }

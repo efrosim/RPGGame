@@ -4,10 +4,7 @@ public class StatePlayerMove : State<PlayerController>, IPhysicsState
 {
     public StatePlayerMove(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void LogicUpdate()
-    {
-        // Пусто. Логика переключения атак теперь безопасно работает через события в PlayerController
-    }
+    public override void LogicUpdate() { }
 
     public void PhysicsUpdate()
     {

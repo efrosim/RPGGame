@@ -2,18 +2,13 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public static GameController Instance;
-
     [SerializeField] private GameObject _restartCanvas;
-    [SerializeField] private GameObject _gameOverTriggerObject; // DIP: Зависим от абстракции
+    [SerializeField] private GameObject _gameOverTriggerObject;
 
     private IGameOverTrigger _trigger;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(this);
-
         ResumeGame();
     }
 

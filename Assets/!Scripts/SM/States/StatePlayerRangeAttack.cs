@@ -6,8 +6,7 @@ public class StatePlayerRangeAttack : StatePlayerAttack
 
     public override void OnAnimationEvent(AnimationEventType eventType)
     {
-        if (eventType == AnimationEventType.DealDamage)
-            _character.Range.Use(); // ИСПРАВЛЕНО: вызываем Use()
+        if (eventType == AnimationEventType.DealDamage) _character.Range.Use();
         base.OnAnimationEvent(eventType);
     }
 }

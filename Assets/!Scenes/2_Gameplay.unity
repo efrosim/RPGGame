@@ -18332,7 +18332,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBar
   _fillImage: {fileID: 1665863801}
-  _healthSourceObj: {fileID: 0}
+  _healthSourceObj: {fileID: 1758729276}
 --- !u!1 &2087124349 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1855058490907333539, guid: 58ee03c36af47554cb024f6f922f81e9, type: 3}

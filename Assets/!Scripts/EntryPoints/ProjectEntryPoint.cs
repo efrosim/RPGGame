@@ -8,20 +8,15 @@ public class ProjectEntryPoint : MonoBehaviour
     {
         DontDestroyOnLoad(gameObject);
 
-        // Инициализация конкретных сервисов (Top-Down)
         IAudioService audioService = new UnityAudioService();
-        ISaveService saveService = new JsonSaveService();
+        ISaveRepository saveRepository = new JsonSaveRepository(); 
         ISceneLoaderService sceneLoader = new UnitySceneLoader();
 
-        // Регистрация в локаторе
         ServiceLocator.Register(audioService);
-        ServiceLocator.Register(saveService);
+        ServiceLocator.Register(saveRepository);
         ServiceLocator.Register(sceneLoader);
 
-        // Применяем сохраненную громкость
         audioService.SetVolume(audioService.GetVolume());
-
-        // Загружаем главное меню
         sceneLoader.LoadScene(_mainMenuSceneIndex);
     }
 }

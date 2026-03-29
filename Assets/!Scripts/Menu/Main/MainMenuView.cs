@@ -13,7 +13,6 @@ public class MainMenuView : MonoBehaviour
     [Header("Settings")]
     public Slider _volumeSlider;
 
-    // События для контроллера
     public event Action OnPlayClicked;
     public event Action<float> OnVolumeChanged;
 
