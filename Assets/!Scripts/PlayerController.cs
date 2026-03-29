@@ -1,13 +1,26 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
-public class PlayerController : Character
+[RequireComponent(typeof(CooldownTimer))]
+// Добавили IGameOverTrigger только игроку
+public class PlayerController : Character, IGameOverTrigger
 {
-    public static PlayerController Instance;
+    
+    [Header("Weapons")][Tooltip("Объект с компонентом, реализующим IWeapon (Ближний бой)")]
+    [SerializeField] private GameObject _meleeWeaponObj;
+    [Tooltip("Объект с компонентом, реализующим IWeapon (Дальний бой)")]
+    [SerializeField] private GameObject _rangeWeaponObj;
+    
+    public Rigidbody _rb { get; private set; }
+    public IWeapon Melee { get; private set; } 
+    public IWeapon Range { get; private set; }
+    public CooldownTimer MagicCooldown { get; private set; }
 
-    public Rigidbody _rb;
+    [Header("Movement Stats")]
+    public float _moveSpeed = 5f; 
+    public float _rotSpeed = 2f;
 
     [Header("Input")]
     public InputActionReference _move;
@@ -16,118 +29,82 @@ public class PlayerController : Character
     public InputActionReference _secondAttack;
     public InputActionReference _rotation;
 
-    [Header("States")]
     private StateMachine _SM;
-    public StatePlayerMove _statePlayerMove;
-    public StatePlayerMeleeAttack _statePlayerMeleeAttack;
-    public StatePlayerRangeAttack _statePlayerRangeAttack;[Header("Range Attack & Cooldown")]
-    public GameObject _shellPrefab;
-    public Transform _shellSpawnPos;
-    public float _magicCooldown = 2f;
-    [HideInInspector] public float _lastMagicTime = -10f;
-    public event Action<float> OnMagicCooldownChanged; // Событие для UI[Header("Melee Attack")]
-    [SerializeField] private Vector3 _hitCube = new Vector3(1.5f, 1.5f, 1.5f);
-    [SerializeField] private float _hitOffset = 1f; // Смещение зоны удара вперед
+    private Dictionary<Type, IState> _states = new Dictionary<Type, IState>();
 
-    private void Awake()
+    protected override void Awake()
     {
-        if(Instance == null) Instance = this;
-        else Destroy(gameObject);
-
+        base.Awake();
         _rb = GetComponent<Rigidbody>();
+        MagicCooldown = GetComponent<CooldownTimer>();
+        
+        // Инициализируем оружие через интерфейсы
+        if (_meleeWeaponObj != null) Melee = _meleeWeaponObj.GetComponent<IWeapon>();
+        if (_rangeWeaponObj != null) Range = _rangeWeaponObj.GetComponent<IWeapon>();
+        
         _SM = new StateMachine();
 
-        _statePlayerMeleeAttack = new StatePlayerMeleeAttack(this, _SM);
-        _statePlayerMove = new StatePlayerMove(this, _SM);
-        _statePlayerRangeAttack = new StatePlayerRangeAttack(this, _SM);
+        AddState(new StatePlayerMove(this, _SM));
+        AddState(new StatePlayerMeleeAttack(this, _SM));
+        AddState(new StatePlayerRangeAttack(this, _SM));
 
-        _SM.Init(_statePlayerMove);
+        ChangeState<StatePlayerMove>();
+    }
+
+    private void AddState(IState state) => _states[state.GetType()] = state;
+
+    public void ChangeState<T>() where T : IState
+    {
+        if (_states.TryGetValue(typeof(T), out IState state))
+            _SM.ChangeState(state);
     }
 
     private void OnEnable()
     {
-        _move.action.Enable();
+        _move.action.Enable(); 
         _shift.action.Enable();
-        _primeAttack.action.Enable();
-        _secondAttack.action.Enable();
+        _primeAttack.action.Enable(); 
+        _secondAttack.action.Enable(); 
         _rotation.action.Enable();
+
+        // Подписываемся на атаки здесь (OCP)
+        _primeAttack.action.performed += OnPrimeAttack;
+        _secondAttack.action.performed += OnSecondAttack;
     }
 
     private void OnDisable()
     {
-        _move.action.Disable();
+        _primeAttack.action.performed -= OnPrimeAttack;
+        _secondAttack.action.performed -= OnSecondAttack;
+
+        _move.action.Disable(); 
         _shift.action.Disable();
-        _primeAttack.action.Disable();
-        _secondAttack.action.Disable();
+        _primeAttack.action.Disable(); 
+        _secondAttack.action.Disable(); 
         _rotation.action.Disable();
     }
+
+    private void OnPrimeAttack(InputAction.CallbackContext ctx)
+    {
+        if (_SM._curState is StatePlayerMove)
+            ChangeState<StatePlayerMeleeAttack>();
+    }
+
+    private void OnSecondAttack(InputAction.CallbackContext ctx)
+    {
+        if (_SM._curState is StatePlayerMove && MagicCooldown.IsReady)
+        {
+            MagicCooldown.StartCooldown();
+            ChangeState<StatePlayerRangeAttack>();
+        }
+    }
     
-    private void Update()
-    {
-        if (Time.time < _lastMagicTime + _magicCooldown)
-        {
-            float progress = 1f - ((Time.time - _lastMagicTime) / _magicCooldown);
-            OnMagicCooldownChanged?.Invoke(progress);
-        }
-        else
-        {
-            OnMagicCooldownChanged?.Invoke(0f);
-        }
-    }
+    private void Update() => _SM.LogicUpdate();
+    private void FixedUpdate() => _SM.PhysicsUpdate();
+    public void OnAnimationEvent(AnimationEventType eventType) => _SM.OnAnimationEvent(eventType);
 
-    private void FixedUpdate()
+    protected override void OnHitReceived(int dmg, DamageType type)
     {
-        _SM._curState.LogicUpdate();
-        _SM._curState.Update();
-    }
-
-    public void EventHandler(AnimEnums state)
-    {
-        _SM._curState.EventHandler(state);
-    }
-
-    public override void GetHit(int dmg, DamageType type)
-    {
-        base.GetHit(dmg, type);
-
-        if (_HP <= 0)
-        {
-            GameController.Instance.GameLose();
-        }
-        else
-        {
-            _animator.SetTrigger("Hit");
-        }
-    }
-
-    public void RangeAttackSheelCreate()
-    {
-        GameObject shell = Instantiate(_shellPrefab, _shellSpawnPos.position, _shellSpawnPos.rotation);
-        shell.GetComponent<Shell>().SetDamage(_dmg);
-    }
-
-    public void MeleeDamageCheck()
-    {
-        // Создаем зону поражения перед игроком
-        Vector3 hitCenter = transform.position + transform.forward * _hitOffset + Vector3.up;
-        Collider[] hitColliders = Physics.OverlapBox(hitCenter, _hitCube / 2, transform.rotation);
-        
-        foreach (var hit in hitColliders)
-        {
-            if (hit.gameObject == this.gameObject) continue; // Не бьем сами себя
-            
-            if (hit.TryGetComponent(out IHittable target))
-            {
-                target.GetHit(_dmg, DamageType.Melee); // Наносим физический урон
-            }
-        }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Vector3 hitCenter = transform.position + transform.forward * _hitOffset + Vector3.up;
-        Gizmos.matrix = Matrix4x4.TRS(hitCenter, transform.rotation, Vector3.one);
-        Gizmos.DrawWireCube(Vector3.zero, _hitCube);
+        _animator.SetTrigger("Hit");
     }
 }

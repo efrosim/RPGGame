@@ -1,55 +1,33 @@
 using UnityEngine;
 
-public class StateEnemyChase : State
+public class StateEnemyChase : State<Enemy>, IPhysicsState
 {
-    private new Enemy _character;
-    public StateEnemyChase(Character character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-        _character = (Enemy)character;
-    }
+    public StateEnemyChase(Enemy character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void Enter()
-    {
-        Debug.Log("Cur State: " + _SM._curState);
-        _character._agent.isStopped = false;
-    }
+    public override void Enter() => _character._agent.isStopped = false;
+    public override void Exit() => _character._animator.SetBool("IsChase", false);
 
-    public override void Exit()
-    {
-        _character._animator.SetBool("IsChase", false);
-    }
-
-    public override void EventHandler(AnimEnums animstate)
-    {
-
-    }
-    
     public override void LogicUpdate()
     {
-        float distanceToPlayer = Vector3.Distance(_character.transform.position, PlayerController.Instance.transform.position);
-
-        if (distanceToPlayer > _character._idleRange)
+        if (_character.Target == null || !_character.Target.IsValidTarget) 
         {
-            _SM.ChangeState(_character._idleState);
+            _character.Target = null;
+            _character.ChangeState<StateEnemyIdle>();
+            return;
         }
 
-        else if (distanceToPlayer <= _character._attackRange)
-        {
-            _SM.ChangeState(_character._attackState);
-        }
+        float distanceToTarget = Vector3.Distance(_character.transform.position, _character.Target.TargetPosition);
+
+        if (distanceToTarget > _character._idleRange)
+            _character.ChangeState<StateEnemyIdle>();
+        else if (distanceToTarget <= _character._attackRange)
+            _character.TransitionToAttackState(); // OCP: Вызов абстрактного метода
     }
     
-    public override void Update()
+    public void PhysicsUpdate()
     {
-        _character._agent.destination = PlayerController.Instance.transform.position;
-        
-        if (_character._agent.velocity.sqrMagnitude < 0.01f)
-        {
-            _character._animator.SetBool("IsChase", false);
-        }
-        else
-        {
-            _character._animator.SetBool("IsChase", true);
-        }
+        if (_character.Target == null) return;
+        _character._agent.destination = _character.Target.TargetPosition;
+        _character._animator.SetBool("IsChase", _character._agent.velocity.sqrMagnitude >= 0.01f);
     }
 }

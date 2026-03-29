@@ -1,45 +1,47 @@
 using System;
 using UnityEngine;
 
-public enum DamageType
-{
-    Melee,
-    Range
-}
-
-public abstract class Character : MonoBehaviour, IHittable, IHealth
+// Убрали IGameOverTrigger отсюда. Теперь враги не могут завершить игру.
+public abstract class Character : MonoBehaviour, IHittable, IHealth, ITargetable
 {[Header("Stats")]
     [SerializeField] protected int _HP;
     [SerializeField] protected int _MaxHP;
-    [SerializeField] protected int _dmg;
-    public float _moveSpeed;
-    public float _rotSpeed;
-
+    
     public Animator _animator;
 
     public int HP => _HP;
     public int MaxHP => _MaxHP;
 
+    public Vector3 TargetPosition => transform.position;
+    public bool IsValidTarget => _HP > 0;
+
     public event Action<float> OnHealthChanged; 
+    public event Action OnDeadEvent; 
     
+    protected virtual void Awake() { }
+
     protected virtual void Start()
     {
         _HP = _MaxHP;
         OnHealthChanged?.Invoke(GetHealthNormalized()); 
     }
 
-    // Принимаем тип урона
-    public virtual void GetHit(int dmg, DamageType type)
+    public void GetHit(int dmg, DamageType type)
     {
+        if (_HP <= 0) return; 
+
         _HP -= dmg;
         OnHealthChanged?.Invoke(GetHealthNormalized());
+
+        OnHitReceived(dmg, type);
+
+        if (_HP <= 0) 
+        {
+            OnDeadEvent?.Invoke();
+        }
     }
 
-    public virtual void DealDmg() { }
-    
-    public float GetHealthNormalized()
-    {
-        if (_MaxHP == 0) return 0f; 
-        return (float)_HP / _MaxHP;
-    }
+    protected virtual void OnHitReceived(int dmg, DamageType type) { }
+
+    public float GetHealthNormalized() => _MaxHP == 0 ? 0f : (float)_HP / _MaxHP;
 }

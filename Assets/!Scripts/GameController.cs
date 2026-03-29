@@ -5,6 +5,9 @@ public class GameController : MonoBehaviour
     public static GameController Instance;
 
     [SerializeField] private GameObject _restartCanvas;
+    [SerializeField] private GameObject _gameOverTriggerObject; // DIP: Зависим от абстракции
+
+    private IGameOverTrigger _trigger;
 
     private void Awake()
     {
@@ -14,6 +17,14 @@ public class GameController : MonoBehaviour
         ResumeGame();
     }
 
+    private void Start()
+    {
+        if (_gameOverTriggerObject != null && _gameOverTriggerObject.TryGetComponent(out _trigger))
+        {
+            _trigger.OnDeadEvent += GameLose;
+        }
+    }
+
     public void GameLose()
     {
         PauseGame();
@@ -21,6 +32,5 @@ public class GameController : MonoBehaviour
     }
 
     public void PauseGame() => Time.timeScale = 0.0f;
-    
     public void ResumeGame() => Time.timeScale = 1.0f;
 }

@@ -1,41 +1,24 @@
 using UnityEngine;
-using UnityEngine.AI;
 
+// Убираем RequireComponent конкретного оружия
 public class EnemyMelee : Enemy
 {
-    [Header("State Machine")]
-    public StateEnemyMeleeAttack _meleeAttackState;
+    // Меняем тип на интерфейс
+    public IWeapon Melee { get; private set; }
 
-    protected void Awake()
+    protected override void Awake()
     {
-        _agent = GetComponent<NavMeshAgent>();
+        base.Awake(); 
+        // Получаем любой компонент, который реализует IWeapon
+        Melee = GetComponent<IWeapon>();
 
-        _SM = new StateMachine();
+        AddState(new StateEnemyChase(this, _SM));
+        AddState(new StateEnemyIdle(this, _SM));
+        AddState(new StateEnemyMeleeAttack(this, _SM));
+        AddState(new StateEnemyDead(this, _SM));
 
-        _chaseState = new StateEnemyChase(this, _SM);
-        _idleState = new StateEnemyIdle(this, _SM);
-        _attackState = new StateEnemyMeleeAttack(this, _SM);
-        _deadState = new StateEnemyDead(this, _SM);
-
-        _SM.Init(_idleState);
+        ChangeState<StateEnemyIdle>();
     }
 
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();
-    }
-
-    public override void EventHandler(AnimEnums state)
-    {
-        base.EventHandler(state);
-    }
-    
-    public override void DealDmg()
-    {
-        if (PlayerController.Instance != null)
-        {
-            PlayerController.Instance.GetHit(_dmg, DamageType.Melee);
-        }
-    }
+    public override void TransitionToAttackState() => ChangeState<StateEnemyMeleeAttack>();
 }
-

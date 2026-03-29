@@ -1,34 +1,26 @@
 using UnityEngine;
 
-public class StateEnemyIdle : State
+public class StateEnemyIdle : State<Enemy>
 {
-    private new Enemy _character;
-    public StateEnemyIdle(Character character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-        _character = (Enemy)character;
-    }
+    public StateEnemyIdle(Enemy character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void Enter()
-    {
-        Debug.Log("Cur State: " + _SM._curState);
-        _character._agent.isStopped = true;
-    }
-
-    public override void Exit()
-    {
-
-    }
-
-    public override void EventHandler(AnimEnums animstate)
-    {
-
-    }
+    private float _scanTimer;
+    
+    public override void Enter() => _character._agent.isStopped = true;
 
     public override void LogicUpdate()
     {
-        if (Vector3.Distance(_character.transform.position, PlayerController.Instance.transform.position) < _character._idleRange)
+        _scanTimer += Time.deltaTime;
+        if (_scanTimer >= 0.2f) 
         {
-            _SM.ChangeState(_character._chaseState);
+            _scanTimer = 0f;
+            _character.Target = _character.Scanner.Scan();
+        }
+
+        if (_character.Target != null)
+        {
+            // ИСПРАВЛЕНО: Теперь используем обобщенный метод вместо жесткой ссылки на поле
+            _character.ChangeState<StateEnemyChase>();
         }
     }
 }

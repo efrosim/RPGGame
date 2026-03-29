@@ -1,33 +1,13 @@
-﻿using System.Collections;
-using UnityEngine;
-
-public class StatePlayerAttack : State
+﻿public abstract class StatePlayerAttack : State<PlayerController>, IAnimationState
 {
-    private new PlayerController _character;
-    public StatePlayerAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-        _character = (PlayerController)character;
-    }
+    public StatePlayerAttack(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void Enter()
-    {
-        _character._animator.SetBool("IsAttack", true);
-        
-    }
-    public override void Exit()
-    {
-        _character._animator.SetBool("IsAttack", false);
-    }
-    public override void EventHandler(AnimEnums animstate)
-    {
-        _SM.ChangeState(_character._statePlayerMove);
-    }
-    public override void LogicUpdate()
-    {
+    public override void Enter() => _character._animator.SetBool("IsAttack", true);
+    public override void Exit() => _character._animator.SetBool("IsAttack", false);
 
-    }
-    public override void Update()
+    public virtual void OnAnimationEvent(AnimationEventType eventType)
     {
-
+        if (eventType == AnimationEventType.AttackEnd) 
+            _character.ChangeState<StatePlayerMove>();
     }
 }

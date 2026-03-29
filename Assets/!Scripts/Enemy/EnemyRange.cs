@@ -1,39 +1,24 @@
 using UnityEngine;
-using UnityEngine.AI;
 
+// Убираем RequireComponent
 public class EnemyRange : Enemy
 {
-    [Header("Range Attack")]
-    public GameObject _shellPrefab;
-    public Transform _shellSpawnPos;
+    // Меняем тип на интерфейс
+    public IWeapon Range { get; private set; }
 
-    protected void Awake()
+    protected override void Awake()
     {
-        _agent = GetComponent<NavMeshAgent>();
+        base.Awake();
+        // Получаем интерфейс
+        Range = GetComponent<IWeapon>();
 
-        _SM = new StateMachine();
+        AddState(new StateEnemyChase(this, _SM));
+        AddState(new StateEnemyIdle(this, _SM));
+        AddState(new StateEnemyRangeAttack(this, _SM));
+        AddState(new StateEnemyDead(this, _SM));
 
-        _chaseState = new StateEnemyChase(this, _SM);
-        _idleState = new StateEnemyIdle(this, _SM);
-        _attackState = new StateEnemyRangeAttack(this, _SM);
-        _deadState = new StateEnemyDead(this, _SM);
-
-        _SM.Init(_idleState);
+        ChangeState<StateEnemyIdle>();
     }
 
-    protected override void FixedUpdate()
-    {
-        base.FixedUpdate();
-    }
-
-    public override void EventHandler(AnimEnums state)
-    {
-        base.EventHandler(state);
-    }
-
-    public void RangeAttackSheelCreate()
-    {
-        GameObject shell = Instantiate(_shellPrefab, _shellSpawnPos.position, _shellSpawnPos.rotation);
-        shell.GetComponent<Shell>().SetDamage(_dmg);
-    }
+    public override void TransitionToAttackState() => ChangeState<StateEnemyRangeAttack>();
 }
