@@ -13,6 +13,10 @@ public class PlayerController : Character, IGameOverTrigger
     [Tooltip("Объект с компонентом, реализующим IWeapon (Дальний бой)")]
     [SerializeField] private GameObject _rangeWeaponObj;
     
+    [Header("Toggle Object")] 
+    [Tooltip("Объект, который будет включаться и выключаться по кнопке")] 
+    [SerializeField] private GameObject _objectToToggle; 
+
     public Rigidbody _rb { get; private set; }
     public IWeapon Melee { get; private set; } 
     public IWeapon Range { get; private set; }
@@ -28,6 +32,7 @@ public class PlayerController : Character, IGameOverTrigger
     public InputActionReference _primeAttack;
     public InputActionReference _secondAttack;
     public InputActionReference _rotation;
+    public InputActionReference _toggleInput;
 
     private StateMachine _SM;
     private Dictionary<Type, IState> _states = new Dictionary<Type, IState>();
@@ -45,9 +50,8 @@ public class PlayerController : Character, IGameOverTrigger
 
         AddState(new StatePlayerMove(this, _SM));
         AddState(new StatePlayerMeleeAttack(this, _SM));
-        AddState(new StatePlayerMeleeAttack(this, _SM));
         AddState(new StatePlayerRangeAttack(this, _SM));
-        AddState(new StatePlayerHit(this, _SM)); // <--- ДОБАВИТЬ ЭТУ СТРОКУ
+        AddState(new StatePlayerHit(this, _SM)); 
         
         ChangeState<StatePlayerMove>();
     }
@@ -67,21 +71,25 @@ public class PlayerController : Character, IGameOverTrigger
         _primeAttack.action.Enable(); 
         _secondAttack.action.Enable(); 
         _rotation.action.Enable();
+        _toggleInput.action.Enable(); 
 
         _primeAttack.action.performed += OnPrimeAttack;
         _secondAttack.action.performed += OnSecondAttack;
+        _toggleInput.action.performed += OnToggleAction; 
     }
 
     private void OnDisable()
     {
         _primeAttack.action.performed -= OnPrimeAttack;
         _secondAttack.action.performed -= OnSecondAttack;
+        _toggleInput.action.performed -= OnToggleAction; 
 
         _move.action.Disable(); 
         _shift.action.Disable();
         _primeAttack.action.Disable(); 
         _secondAttack.action.Disable(); 
         _rotation.action.Disable();
+        _toggleInput.action.Disable();
     }
 
     private void OnPrimeAttack(InputAction.CallbackContext ctx)
@@ -96,6 +104,20 @@ public class PlayerController : Character, IGameOverTrigger
         {
             MagicCooldown.StartCooldown();
             ChangeState<StatePlayerRangeAttack>();
+        }
+    }
+    
+    private void OnToggleAction(InputAction.CallbackContext ctx)
+    {
+        // Проверяем, назначен ли объект в инспекторе, чтобы избежать ошибок
+        if (_objectToToggle != null)
+        {
+            // Переключаем состояние: если включен - выключаем, если выключен - включаем
+            _objectToToggle.SetActive(!_objectToToggle.activeSelf);
+        }
+        else
+        {
+            Debug.LogWarning("Объект для переключения не назначен в инспекторе!");
         }
     }
     
