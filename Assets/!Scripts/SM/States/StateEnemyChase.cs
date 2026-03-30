@@ -36,6 +36,5 @@ public class StateEnemyChase : State<Enemy>, IPhysicsState
     {
         if (_character.Target == null) return;
         _character.Agent.destination = _character.Target.TargetPosition;
-        // SetBool("IsChase") удален, так как стейт сам контролирует анимацию
     }
 }

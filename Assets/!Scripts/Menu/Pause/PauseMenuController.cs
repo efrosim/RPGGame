@@ -30,6 +30,9 @@ public class PauseMenuController
         _isPaused = !_isPaused;
         _view.ToggleMenu(_isPaused);
         Time.timeScale = _isPaused ? 0f : 1f;
+        
+        Cursor.visible = _isPaused;
+        Cursor.lockState = _isPaused ? CursorLockMode.None : CursorLockMode.Locked;
     }
 
     private void SaveGame()

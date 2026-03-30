@@ -4,55 +4,50 @@ using UnityEngine;
 public abstract class Character : MonoBehaviour, IHittable, IHealth, ITargetable
 {
     [Header("Stats")]
-    [SerializeField] protected int _HP;
     [SerializeField] protected int _MaxHP;
     
     public Animator _animator;
 
-    public int HP => _HP;
+    // Делегируем логику в чистый C# класс
+    protected HealthModel _healthModel;
+
+    public int HP => _healthModel?.HP ?? 0;
     public int MaxHP => _MaxHP;
 
     public Vector3 TargetPosition => transform.position;
-    public bool IsValidTarget => _HP > 0;
+    public bool IsValidTarget => HP > 0;
 
     public event Action<float> OnHealthChanged; 
     public event Action OnDeadEvent; 
     
-    protected virtual void Awake() { }
+    protected virtual void Awake() 
+    {
+        _healthModel = new HealthModel(_MaxHP);
+        
+        // Пробрасываем события из модели наружу
+        _healthModel.OnHealthChanged += (val) => OnHealthChanged?.Invoke(val);
+        _healthModel.OnDeadEvent += () => OnDeadEvent?.Invoke();
+    }
 
     protected virtual void Start()
     {
-        _HP = _MaxHP;
         OnHealthChanged?.Invoke(GetHealthNormalized()); 
     }
 
     public void GetHit(int dmg, DamageType type)
     {
-        if (_HP <= 0) return; 
+        if (HP <= 0) return; 
 
-        _HP -= dmg;
-        OnHealthChanged?.Invoke(GetHealthNormalized());
-
+        _healthModel.TakeDamage(dmg);
         OnHitReceived(dmg, type);
-
-        if (_HP <= 0) 
-        {
-            OnDeadEvent?.Invoke();
-        }
     }
 
     public void SetHealth(int hp)
     {
-        _HP = Mathf.Clamp(hp, 0, _MaxHP);
-        OnHealthChanged?.Invoke(GetHealthNormalized());
-        
-        if (_HP <= 0) 
-        {
-            OnDeadEvent?.Invoke();
-        }
+        _healthModel.SetHealth(hp);
     }
 
     protected virtual void OnHitReceived(int dmg, DamageType type) { }
 
-    public float GetHealthNormalized() => _MaxHP == 0 ? 0f : (float)_HP / _MaxHP;
+    public float GetHealthNormalized() => _healthModel?.GetHealthNormalized() ?? 0f;
 }

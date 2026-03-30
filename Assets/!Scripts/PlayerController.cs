@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CooldownTimer))]
-
 public class PlayerController : Character, IGameOverTrigger
 {
     
@@ -41,7 +39,9 @@ public class PlayerController : Character, IGameOverTrigger
     {
         base.Awake();
         _rb = GetComponent<Rigidbody>();
-        MagicCooldown = GetComponent<CooldownTimer>();
+        
+        // Создаем чистый C# класс вместо GetComponent
+        MagicCooldown = new CooldownTimer(2f); 
         
         if (_meleeWeaponObj != null) Melee = _meleeWeaponObj.GetComponent<IWeapon>();
         if (_rangeWeaponObj != null) Range = _rangeWeaponObj.GetComponent<IWeapon>();
@@ -92,6 +92,17 @@ public class PlayerController : Character, IGameOverTrigger
         _toggleInput.action.Disable();
     }
 
+    public void DisableInput()
+    {
+        _move.action.Disable(); 
+        _shift.action.Disable();
+        _primeAttack.action.Disable(); 
+        _secondAttack.action.Disable(); 
+        _rotation.action.Disable();
+        _toggleInput.action.Disable();
+    }
+    
+    
     private void OnPrimeAttack(InputAction.CallbackContext ctx)
     {
         if (_SM._curState is StatePlayerMove)
@@ -109,10 +120,8 @@ public class PlayerController : Character, IGameOverTrigger
     
     private void OnToggleAction(InputAction.CallbackContext ctx)
     {
-        // Проверяем, назначен ли объект в инспекторе, чтобы избежать ошибок
         if (_objectToToggle != null)
         {
-            // Переключаем состояние: если включен - выключаем, если выключен - включаем
             _objectToToggle.SetActive(!_objectToToggle.activeSelf);
         }
         else
@@ -121,13 +130,25 @@ public class PlayerController : Character, IGameOverTrigger
         }
     }
     
-    private void Update() => _SM.LogicUpdate();
+    private void Update() 
+    {
+        _SM.LogicUpdate();
+        if (MagicCooldown != null)
+        {
+            MagicCooldown.Tick(Time.deltaTime);
+        } 
+    }
+    
     private void FixedUpdate() => _SM.PhysicsUpdate();
     public void OnAnimationEvent(AnimationEventType eventType) => _SM.OnAnimationEvent(eventType);
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {
-        if (_HP > 0)
+        if (HP <= 0)
+        {
+            DisableInput();
+        }
+        else
         {
             ChangeState<StatePlayerHit>(); // Переходим в микро-стан
         }
