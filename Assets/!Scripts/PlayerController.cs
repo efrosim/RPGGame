@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CooldownTimer))]
-
 public class PlayerController : Character, IGameOverTrigger
 {
     
@@ -13,6 +11,10 @@ public class PlayerController : Character, IGameOverTrigger
     [Tooltip("Объект с компонентом, реализующим IWeapon (Дальний бой)")]
     [SerializeField] private GameObject _rangeWeaponObj;
     
+    [Header("Toggle Object")] 
+    [Tooltip("Объект, который будет включаться и выключаться по кнопке")] 
+    [SerializeField] private GameObject _objectToToggle; 
+
     public Rigidbody _rb { get; private set; }
     public IWeapon Melee { get; private set; } 
     public IWeapon Range { get; private set; }
@@ -28,6 +30,7 @@ public class PlayerController : Character, IGameOverTrigger
     public InputActionReference _primeAttack;
     public InputActionReference _secondAttack;
     public InputActionReference _rotation;
+    public InputActionReference _toggleInput;
 
     private StateMachine _SM;
     private Dictionary<Type, IState> _states = new Dictionary<Type, IState>();
@@ -36,7 +39,9 @@ public class PlayerController : Character, IGameOverTrigger
     {
         base.Awake();
         _rb = GetComponent<Rigidbody>();
-        MagicCooldown = GetComponent<CooldownTimer>();
+        
+        // Создаем чистый C# класс вместо GetComponent
+        MagicCooldown = new CooldownTimer(2f); 
         
         if (_meleeWeaponObj != null) Melee = _meleeWeaponObj.GetComponent<IWeapon>();
         if (_rangeWeaponObj != null) Range = _rangeWeaponObj.GetComponent<IWeapon>();
@@ -45,9 +50,8 @@ public class PlayerController : Character, IGameOverTrigger
 
         AddState(new StatePlayerMove(this, _SM));
         AddState(new StatePlayerMeleeAttack(this, _SM));
-        AddState(new StatePlayerMeleeAttack(this, _SM));
         AddState(new StatePlayerRangeAttack(this, _SM));
-        AddState(new StatePlayerHit(this, _SM)); // <--- ДОБАВИТЬ ЭТУ СТРОКУ
+        AddState(new StatePlayerHit(this, _SM)); 
         
         ChangeState<StatePlayerMove>();
     }
@@ -67,23 +71,38 @@ public class PlayerController : Character, IGameOverTrigger
         _primeAttack.action.Enable(); 
         _secondAttack.action.Enable(); 
         _rotation.action.Enable();
+        _toggleInput.action.Enable(); 
 
         _primeAttack.action.performed += OnPrimeAttack;
         _secondAttack.action.performed += OnSecondAttack;
+        _toggleInput.action.performed += OnToggleAction; 
     }
 
     private void OnDisable()
     {
         _primeAttack.action.performed -= OnPrimeAttack;
         _secondAttack.action.performed -= OnSecondAttack;
+        _toggleInput.action.performed -= OnToggleAction; 
 
         _move.action.Disable(); 
         _shift.action.Disable();
         _primeAttack.action.Disable(); 
         _secondAttack.action.Disable(); 
         _rotation.action.Disable();
+        _toggleInput.action.Disable();
     }
 
+    public void DisableInput()
+    {
+        _move.action.Disable(); 
+        _shift.action.Disable();
+        _primeAttack.action.Disable(); 
+        _secondAttack.action.Disable(); 
+        _rotation.action.Disable();
+        _toggleInput.action.Disable();
+    }
+    
+    
     private void OnPrimeAttack(InputAction.CallbackContext ctx)
     {
         if (_SM._curState is StatePlayerMove)
@@ -99,13 +118,37 @@ public class PlayerController : Character, IGameOverTrigger
         }
     }
     
-    private void Update() => _SM.LogicUpdate();
+    private void OnToggleAction(InputAction.CallbackContext ctx)
+    {
+        if (_objectToToggle != null)
+        {
+            _objectToToggle.SetActive(!_objectToToggle.activeSelf);
+        }
+        else
+        {
+            Debug.LogWarning("Объект для переключения не назначен в инспекторе!");
+        }
+    }
+    
+    private void Update() 
+    {
+        _SM.LogicUpdate();
+        if (MagicCooldown != null)
+        {
+            MagicCooldown.Tick(Time.deltaTime);
+        } 
+    }
+    
     private void FixedUpdate() => _SM.PhysicsUpdate();
     public void OnAnimationEvent(AnimationEventType eventType) => _SM.OnAnimationEvent(eventType);
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {
-        if (_HP > 0)
+        if (HP <= 0)
+        {
+            DisableInput();
+        }
+        else
         {
             ChangeState<StatePlayerHit>(); // Переходим в микро-стан
         }

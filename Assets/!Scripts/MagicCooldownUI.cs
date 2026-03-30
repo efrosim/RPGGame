@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class MagicCooldownUI : MonoBehaviour
 {
     private Image _cooldownImage;
-    [SerializeField] private CooldownTimer _cooldownTimer; 
+    private CooldownTimer _cooldownTimer; 
 
     private void Awake()
     {
@@ -13,13 +13,14 @@ public class MagicCooldownUI : MonoBehaviour
         _cooldownImage.type = Image.Type.Filled;
     }
 
-    private void OnEnable()
+    // Метод для передачи зависимости
+    public void Init(CooldownTimer timer)
     {
-        if (_cooldownTimer != null)
-            _cooldownTimer.OnCooldownProgress += UpdateCooldownUI;
+        _cooldownTimer = timer;
+        _cooldownTimer.OnCooldownProgress += UpdateCooldownUI;
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (_cooldownTimer != null)
             _cooldownTimer.OnCooldownProgress -= UpdateCooldownUI;

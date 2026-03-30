@@ -6,18 +6,14 @@ public class MeleeWeapon : MonoBehaviour, IWeapon
     [SerializeField] private Vector3 _hitCube = new Vector3(1.5f, 1.5f, 1.5f);
     [SerializeField] private float _hitOffset = 1f;
 
-    [SerializeField] private int _maxTargets = 10;
+    [SerializeField] private int _maxTargets = 20;
     private Collider[] _hitColliders;
 
-    // Ссылка на владельца оружия (Игрока или Врага), чтобы не бить самого себя
     private IHittable _owner;
 
     private void Awake()
     {
         _hitColliders = new Collider[_maxTargets];
-
-        // Ищем компонент IHittable на самом объекте или на его родителях.
-        // Так как MeleeWeapon лежит внутри Игрока/Врага, он найдет их скрипт (PlayerController или Enemy).
         _owner = GetComponentInParent<IHittable>();
     }
 
@@ -30,15 +26,19 @@ public class MeleeWeapon : MonoBehaviour, IWeapon
 
         for (int i = 0; i < count; i++)
         {
-            // Пытаемся получить интерфейс IHittable у того, в кого попали
             if (_hitColliders[i].TryGetComponent(out IHittable target))
             {
-                // Если тот, в кого мы попали — это владелец оружия, пропускаем его!
                 if (target == _owner) continue;
-
-                // Иначе наносим урон
                 target.GetHit(_dmg, DamageType.Melee);
             }
         }
+    }
+    
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color(1, 0, 0, 0.5f); 
+        Vector3 hitCenter = transform.position + transform.forward * _hitOffset + Vector3.up;
+        Gizmos.matrix = Matrix4x4.TRS(hitCenter, transform.rotation, Vector3.one);
+        Gizmos.DrawCube(Vector3.zero, _hitCube);
     }
 }

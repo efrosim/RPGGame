@@ -1,33 +1,38 @@
 ﻿using System;
-using UnityEngine;
 
-public class CooldownTimer : MonoBehaviour
+public class CooldownTimer
 {
-    public float _cooldownTime = 2f;
-    private float _lastUseTime = -10f;
+    private readonly float _cooldownTime;
+    private float _currentTimer;
     private bool _isActive = false;
     
     public event Action<float> OnCooldownProgress;
     public bool IsReady => !_isActive;
 
+    public CooldownTimer(float cooldownTime)
+    {
+        _cooldownTime = cooldownTime;
+    }
+
     public void StartCooldown()
     {
-        _lastUseTime = Time.time;
+        _currentTimer = _cooldownTime;
         _isActive = true;
         OnCooldownProgress?.Invoke(1f);
     }
 
-    private void Update()
+    // Вызываем вручную из Update контроллера
+    public void Tick(float deltaTime)
     {
-        if (_isActive)
+        if (!_isActive) return;
+
+        _currentTimer -= deltaTime;
+        if (_currentTimer <= 0f)
         {
-            float progress = (Time.time - _lastUseTime) / _cooldownTime;
-            if (progress >= 1f)
-            {
-                progress = 1f;
-                _isActive = false;
-            }
-            OnCooldownProgress?.Invoke(1f - progress);
+            _currentTimer = 0f;
+            _isActive = false;
         }
+        
+        OnCooldownProgress?.Invoke(_currentTimer / _cooldownTime);
     }
 }
