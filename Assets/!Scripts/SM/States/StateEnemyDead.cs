@@ -1,33 +1,16 @@
 using UnityEngine;
 
-public class StateEnemyDead : State
+public class StateEnemyDead : State<Enemy>
 {
-    private new Enemy _character;
-    public StateEnemyDead(Character character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-        _character = (Enemy)character;
-    }
+    private static readonly int DeadHash = Animator.StringToHash("Dead");
+    private const float CrossFadeDuration = 0.1f;
+
+    public StateEnemyDead(Enemy character, StateMachine stateMachine) : base(character, stateMachine) { }
 
     public override void Enter()
     {
-        Debug.Log("Cur State: " + _SM._curState);
-        _character._agent.isStopped = true;
-        _character._agent.enabled = false;
-        _character.OnDead();
-    }
-
-    public override void Exit()
-    {
-        
-    }
-
-    public override void EventHandler(AnimEnums animstate)
-    {
-        
-    }
-
-    public override void LogicUpdate()
-    {
-
+        _character.Agent.isStopped = true;
+        _character.Agent.enabled = false;
+        _character._animator.CrossFadeInFixedTime(DeadHash, CrossFadeDuration);
     }
 }

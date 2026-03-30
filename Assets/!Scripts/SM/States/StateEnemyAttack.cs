@@ -1,41 +1,39 @@
 using UnityEngine;
 
-public class StateEnemyAttack : State
+public abstract class StateEnemyAttack<T> : State<T>, IAnimationState where T : Enemy
 {
-    private new Enemy _character;
-    public StateEnemyAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-        _character = (Enemy)character;
-    }
+    protected abstract int AttackHash { get; }
+    private const float CrossFadeDuration = 0.1f;
 
+    public StateEnemyAttack(T character, StateMachine stateMachine) : base(character, stateMachine) { }
+    
     public override void Enter()
     {
-        Debug.Log("Cur State: " + _SM._curState);
-        _character._agent.isStopped = true;
-        
-        // Возвращаем Bool для того чтобы не происходило быстрое переключение
-        _character._animator.SetBool("IsAttack", true); 
-    }
-
-    public override void Exit()
-    {
-        // Сбрасываем Bool, чтобы аниматор не зависал в атаке
-        _character._animator.SetBool("IsAttack", false);
-    }
-
-    public override void EventHandler(AnimEnums animstate)
-    {
-        Debug.Log("Here");
-        if (animstate == AnimEnums.AttackEnd) OnAttackEnd();
+        _character.Agent.isStopped = true;
+        _character._animator.CrossFadeInFixedTime(AttackHash, CrossFadeDuration);
     }
 
     public override void LogicUpdate()
     {
-
+        // Плавный поворот в сторону игрока во время атаки
+        if (_character.Target != null)
+        {
+            Vector3 direction = _character.Target.TargetPosition - _character.transform.position;
+            direction.y = 0; // Игнорируем разницу по высоте, чтобы враг не заваливался
+            
+            if (direction.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                _character.transform.rotation = Quaternion.Slerp(_character.transform.rotation, targetRotation, Time.deltaTime * 10f);
+            }
+        }
     }
 
-    private void OnAttackEnd()
+    public override void Exit() { }
+
+    public virtual void OnAnimationEvent(AnimationEventType eventType)
     {
-        _SM.ChangeState(_character._chaseState);
+        if (eventType == AnimationEventType.AttackEnd)
+            _character.ChangeState<StateEnemyChase>();
     }
 }

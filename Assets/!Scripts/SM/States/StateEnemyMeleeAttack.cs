@@ -1,40 +1,16 @@
 using UnityEngine;
 
-public class StateEnemyMeleeAttack : StateEnemyAttack
+public class StateEnemyMeleeAttack : StateEnemyAttack<EnemyMelee>
 {
-    private new EnemyMelee _character;
-    public StateEnemyMeleeAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
+    // Передаем хэш анимации ближнего боя
+    protected override int AttackHash => Animator.StringToHash("MeleeAttack");
+
+    public StateEnemyMeleeAttack(EnemyMelee character, StateMachine stateMachine) : base(character, stateMachine) { }
+
+    public override void OnAnimationEvent(AnimationEventType eventType)
     {
-        _character = (EnemyMelee)character;
-    }
-
-    public override void Enter()
-    {
-        base.Enter();
-    }
-
-    public override void Exit()
-    {
-        base.Exit();
-    }
-
-    public override void EventHandler(AnimEnums animstate)
-    {
-        base.EventHandler(animstate);
-
-        if(animstate == AnimEnums.DealDmg) OnDealDmg();
-    }
-
-    public override void LogicUpdate()
-    {
-
-    }
-
-    private void OnDealDmg()
-    {
-        if (Vector3.Distance(_character.transform.position, PlayerController.Instance.transform.position) < _character._attackRange)
-        {
-            _character.DealDmg();
-        }
+        if(eventType == AnimationEventType.DealDamage) 
+            _character.Melee.Use();
+        base.OnAnimationEvent(eventType);
     }
 }

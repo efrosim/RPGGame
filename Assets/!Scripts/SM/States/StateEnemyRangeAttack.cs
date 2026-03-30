@@ -1,43 +1,16 @@
 using UnityEngine;
 
-public class StateEnemyRangeAttack : StateEnemyAttack
+public class StateEnemyRangeAttack : StateEnemyAttack<EnemyRange>
 {
-    private new EnemyRange _character;
-    public StateEnemyRangeAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-        _character = (EnemyRange)character;
-    }
+    // Передаем хэш анимации дальнего боя
+    protected override int AttackHash => Animator.StringToHash("RangeAttack");
 
-    public override void Enter()
-    {
-        Debug.Log("Cur State: " + _SM._curState);
-        _character._agent.isStopped = true;
-        _character._animator.SetBool("IsAttack", true);
-        OnShellFire();
-    }
+    public StateEnemyRangeAttack(EnemyRange character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void Exit()
+    public override void OnAnimationEvent(AnimationEventType eventType)
     {
-        _character._animator.SetBool("IsAttack", false);
-    }
-
-    public override void EventHandler(AnimEnums animstate)
-    {
-        if(animstate == AnimEnums.AttackEnd) OnAttackEnd();
-    }
-
-    public override void LogicUpdate()
-    {
-
-    }
-
-    private void OnShellFire()
-    {
-        _character.RangeAttackSheelCreate();
-    }
-
-    private void OnAttackEnd()
-    {
-        _SM.ChangeState(_character._chaseState);
+        if(eventType == AnimationEventType.DealDamage) 
+            _character.Range.Use();
+        base.OnAnimationEvent(eventType);
     }
 }

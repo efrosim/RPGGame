@@ -1,45 +1,58 @@
 using System;
 using UnityEngine;
 
-public enum DamageType
+public abstract class Character : MonoBehaviour, IHittable, IHealth, ITargetable
 {
-    Melee,
-    Range
-}
-
-public abstract class Character : MonoBehaviour, IHittable, IHealth
-{[Header("Stats")]
+    [Header("Stats")]
     [SerializeField] protected int _HP;
     [SerializeField] protected int _MaxHP;
-    [SerializeField] protected int _dmg;
-    public float _moveSpeed;
-    public float _rotSpeed;
-
+    
     public Animator _animator;
 
     public int HP => _HP;
     public int MaxHP => _MaxHP;
 
+    public Vector3 TargetPosition => transform.position;
+    public bool IsValidTarget => _HP > 0;
+
     public event Action<float> OnHealthChanged; 
+    public event Action OnDeadEvent; 
     
+    protected virtual void Awake() { }
+
     protected virtual void Start()
     {
         _HP = _MaxHP;
         OnHealthChanged?.Invoke(GetHealthNormalized()); 
     }
 
-    // Принимаем тип урона
-    public virtual void GetHit(int dmg, DamageType type)
+    public void GetHit(int dmg, DamageType type)
     {
+        if (_HP <= 0) return; 
+
         _HP -= dmg;
         OnHealthChanged?.Invoke(GetHealthNormalized());
+
+        OnHitReceived(dmg, type);
+
+        if (_HP <= 0) 
+        {
+            OnDeadEvent?.Invoke();
+        }
     }
 
-    public virtual void DealDmg() { }
-    
-    public float GetHealthNormalized()
+    public void SetHealth(int hp)
     {
-        if (_MaxHP == 0) return 0f; 
-        return (float)_HP / _MaxHP;
+        _HP = Mathf.Clamp(hp, 0, _MaxHP);
+        OnHealthChanged?.Invoke(GetHealthNormalized());
+        
+        if (_HP <= 0) 
+        {
+            OnDeadEvent?.Invoke();
+        }
     }
+
+    protected virtual void OnHitReceived(int dmg, DamageType type) { }
+
+    public float GetHealthNormalized() => _MaxHP == 0 ? 0f : (float)_HP / _MaxHP;
 }

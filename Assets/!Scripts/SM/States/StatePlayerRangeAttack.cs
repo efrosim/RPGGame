@@ -2,36 +2,14 @@ using UnityEngine;
 
 public class StatePlayerRangeAttack : StatePlayerAttack
 {
-    private new PlayerController _character;
-    public StatePlayerRangeAttack(Character character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-        _character = (PlayerController)character;
-    }
+    protected override int AttackHash => Animator.StringToHash("RangeAttack");
 
-    public override void Enter()
-    {
-        base.Enter();
-        OnShellFire();
-    }
-    public override void Exit()
-    {
-        base.Exit();
-    }
-    public override void EventHandler(AnimEnums animstate)
-    {
-        base.EventHandler(animstate);
-    }
-    public override void LogicUpdate()
-    {
+    public StatePlayerRangeAttack(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    }
-    public override void Update()
+    public override void OnAnimationEvent(AnimationEventType eventType)
     {
-
-    }
-
-    private void OnShellFire()
-    {
-        _character.RangeAttackSheelCreate();
+        if (eventType == AnimationEventType.DealDamage) 
+            _character.Range.Use();
+        base.OnAnimationEvent(eventType);
     }
 }

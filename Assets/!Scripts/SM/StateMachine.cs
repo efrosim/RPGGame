@@ -1,19 +1,31 @@
-using UnityEngine;
-
 public class StateMachine
 {
-    public State _curState;
+    public IState _curState { get; private set; }
 
-    public void Init(State startState)
+    public void Init(IState startState)
     {
         _curState = startState;
-        _curState.Enter();
+        _curState?.Enter();
     }
 
-    public void ChangeState(State newState)
+    public void ChangeState(IState newState)
     {
-        _curState.Exit();
+        _curState?.Exit();
         _curState = newState;
-        _curState.Enter();
+        _curState?.Enter();
+    }
+
+    public void LogicUpdate() => _curState?.LogicUpdate();
+    
+    public void PhysicsUpdate()
+    {
+        if (_curState is IPhysicsState physicsState)
+            physicsState.PhysicsUpdate();
+    }
+
+    public void OnAnimationEvent(AnimationEventType eventType)
+    {
+        if (_curState is IAnimationState animState)
+            animState.OnAnimationEvent(eventType);
     }
 }

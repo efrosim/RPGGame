@@ -3,48 +3,42 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
 {
-    [Tooltip("Ссылка на зеленую полоску (Image)")]
     [SerializeField] private Image _fillImage;
+    [Tooltip("Объект, реализующий IHealth")]
+    [SerializeField] private GameObject _healthSourceObj; 
     
-    [Tooltip("Ссылка на персонажа. Если пусто, попытается найти на родительском объекте")]
-    [SerializeField] private Character _character;
-
-    private Camera _mainCamera;
+    private IHealth _healthSource;
+    private Camera _mainCamera; 
 
     private void Awake()
     {
         _mainCamera = Camera.main;
         
-        if (_character == null)
-        {
-            _character = GetComponentInParent<Character>();
-        }
+        if (_healthSourceObj != null)
+            _healthSource = _healthSourceObj.GetComponent<IHealth>();
+        else
+            _healthSource = GetComponentInParent<IHealth>();
     }
 
     private void OnEnable()
     {
-        if (_character != null)
-        {
-            // Подписываемся на событие изменения здоровья
-            _character.OnHealthChanged += UpdateHealthBar;
-        }
+        if (_healthSource != null)
+            _healthSource.OnHealthChanged += UpdateHealthBar;
     }
 
     private void OnDisable()
     {
-        if (_character != null)
+        if (_healthSource != null) 
         {
-            // Отписываемся от события, чтобы избежать утечек памяти
-            _character.OnHealthChanged -= UpdateHealthBar;
+            _healthSource.OnHealthChanged -= UpdateHealthBar;
         }
     }
 
     private void Start()
     {
-        if (_character != null)
+        if (_healthSource != null) 
         {
-            // Устанавливаем начальное значение
-            UpdateHealthBar(_character.GetHealthNormalized());
+            UpdateHealthBar(_healthSource.GetHealthNormalized());
         }
     }
 
@@ -58,7 +52,6 @@ public class HealthBar : MonoBehaviour
 
     private void LateUpdate()
     {
-        // Эффект Billboard: заставляем Canvas всегда смотреть прямо в камеру
         if (_mainCamera != null)
         {
             transform.LookAt(transform.position + _mainCamera.transform.forward);

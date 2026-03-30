@@ -20,8 +20,6 @@ public class CameraCollision : MonoBehaviour
         Vector3 worldDirection = (transform.position - _target.position).normalized;
         
         // 2. Переводим это направление в ЛОКАЛЬНЫЕ координаты цели.
-        // Теперь камера "запомнит", что она находится, например, строго сзади и чуть сверху,
-        // и будет сохранять эту позицию при любых поворотах игрока.
         _localDirection = _target.InverseTransformDirection(worldDirection);
         
         _currentDistance = _defaultDistance;
@@ -31,8 +29,7 @@ public class CameraCollision : MonoBehaviour
     {
         if (_target == null) return;
 
-        // Переводим локальное направление обратно в мировое, 
-        // но уже с учетом ТЕКУЩЕГО поворота игрока
+        // Переводим локальное направление обратно в мировое, с учетом поворота игрока
         Vector3 currentWorldDirection = _target.TransformDirection(_localDirection);
 
         float targetDistance = _defaultDistance;
