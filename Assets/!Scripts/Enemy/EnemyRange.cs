@@ -12,7 +12,8 @@ public class EnemyRange : Enemy
         AddState(new StateEnemyIdle(this, _SM));
         AddState(new StateEnemyRangeAttack(this, _SM));
         AddState(new StateEnemyDead(this, _SM));
-
+        AddState(new StateEnemyHit(this, _SM)); 
+        
         ChangeState<StateEnemyIdle>();
     }
 

@@ -2,7 +2,6 @@ using UnityEngine;
 
 public abstract class StateEnemyAttack<T> : State<T>, IAnimationState where T : Enemy
 {
-    // Абстрактное свойство, которое обяжет наследников передать хэш своей анимации
     protected abstract int AttackHash { get; }
     private const float CrossFadeDuration = 0.1f;
 
@@ -11,14 +10,26 @@ public abstract class StateEnemyAttack<T> : State<T>, IAnimationState where T : 
     public override void Enter()
     {
         _character.Agent.isStopped = true;
-        // Жестко приказываем Аниматору включить нужную анимацию атаки
         _character._animator.CrossFadeInFixedTime(AttackHash, CrossFadeDuration);
     }
 
-    public override void Exit() 
-    { 
-        // SetBool больше не нужен!
+    public override void LogicUpdate()
+    {
+        // Плавный поворот в сторону игрока во время атаки
+        if (_character.Target != null)
+        {
+            Vector3 direction = _character.Target.TargetPosition - _character.transform.position;
+            direction.y = 0; // Игнорируем разницу по высоте, чтобы враг не заваливался
+            
+            if (direction.sqrMagnitude > 0.001f)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(direction);
+                _character.transform.rotation = Quaternion.Slerp(_character.transform.rotation, targetRotation, Time.deltaTime * 10f);
+            }
+        }
     }
+
+    public override void Exit() { }
 
     public virtual void OnAnimationEvent(AnimationEventType eventType)
     {

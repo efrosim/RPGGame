@@ -45,8 +45,10 @@ public class PlayerController : Character, IGameOverTrigger
 
         AddState(new StatePlayerMove(this, _SM));
         AddState(new StatePlayerMeleeAttack(this, _SM));
+        AddState(new StatePlayerMeleeAttack(this, _SM));
         AddState(new StatePlayerRangeAttack(this, _SM));
-
+        AddState(new StatePlayerHit(this, _SM)); // <--- ДОБАВИТЬ ЭТУ СТРОКУ
+        
         ChangeState<StatePlayerMove>();
     }
 
@@ -103,6 +105,9 @@ public class PlayerController : Character, IGameOverTrigger
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {
-        _animator.SetTrigger("Hit");
+        if (_HP > 0)
+        {
+            ChangeState<StatePlayerHit>(); // Переходим в микро-стан
+        }
     }
 }

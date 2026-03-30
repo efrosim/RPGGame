@@ -56,7 +56,10 @@ public abstract class Enemy : Character
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {
-        if (_HP <= 0) ChangeState<StateEnemyDead>();
+        if (_HP <= 0) 
+            ChangeState<StateEnemyDead>();
+        else 
+            ChangeState<StateEnemyHit>(); 
     }
 
     private void HandleDeath()
