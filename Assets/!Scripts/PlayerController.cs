@@ -21,9 +21,12 @@ public class PlayerController : Character, IGameOverTrigger
     public CooldownTimer MagicCooldown { get; private set; }
 
     [Header("Movement Stats")]
-    public float _moveSpeed = 5f; 
-    public float _rotSpeed = 2f;
+    [SerializeField] private float _moveSpeed = 5f; 
+    [SerializeField] private float _rotSpeed = 2f;
 
+    public float MoveSpeed => _moveSpeed;
+    public float RotSpeed => _rotSpeed;
+    
     [Header("Input")]
     public InputActionReference _move;
     public InputActionReference _shift;
