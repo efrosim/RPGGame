@@ -4,7 +4,7 @@ public class StateEnemyDead : State<Enemy>
 
     public override void Enter()
     {
-        _character._agent.isStopped = true;
-        _character._agent.enabled = false;
+        _character.Agent.isStopped = true;
+        _character.Agent.enabled = false;
     }
 }

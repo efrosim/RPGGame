@@ -4,7 +4,7 @@ public abstract class StateEnemyAttack<T> : State<T>, IAnimationState where T : 
     
     public override void Enter()
     {
-        _character._agent.isStopped = true;
+        _character.Agent.isStopped = true;
         _character._animator.SetBool("IsAttack", true);
     }
 

@@ -12,7 +12,7 @@ public abstract class Enemy : Character
     public float _attackRange;
     public float _idleRange;
 
-    public NavMeshAgent _agent { get; private set; }
+    public NavMeshAgent Agent { get; private set; }
     public TargetScanner Scanner { get; private set; }
     public ITargetable Target { get; set; } 
 
@@ -22,7 +22,7 @@ public abstract class Enemy : Character
     protected override void Awake() 
     {
         base.Awake(); 
-        _agent = GetComponent<NavMeshAgent>();
+        Agent = GetComponent<NavMeshAgent>();
         Scanner = GetComponent<TargetScanner>();
         _SM = new StateMachine();
         

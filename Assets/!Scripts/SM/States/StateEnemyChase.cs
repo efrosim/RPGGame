@@ -4,7 +4,7 @@ public class StateEnemyChase : State<Enemy>, IPhysicsState
 {
     public StateEnemyChase(Enemy character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void Enter() => _character._agent.isStopped = false;
+    public override void Enter() => _character.Agent.isStopped = false;
     public override void Exit() => _character._animator.SetBool("IsChase", false);
 
     public override void LogicUpdate()
@@ -27,7 +27,7 @@ public class StateEnemyChase : State<Enemy>, IPhysicsState
     public void PhysicsUpdate()
     {
         if (_character.Target == null) return;
-        _character._agent.destination = _character.Target.TargetPosition;
-        _character._animator.SetBool("IsChase", _character._agent.velocity.sqrMagnitude >= 0.01f);
+        _character.Agent.destination = _character.Target.TargetPosition;
+        _character._animator.SetBool("IsChase", _character.Agent.velocity.sqrMagnitude >= 0.01f);
     }
 }

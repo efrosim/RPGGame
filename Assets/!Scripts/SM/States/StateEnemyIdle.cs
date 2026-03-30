@@ -6,7 +6,7 @@ public class StateEnemyIdle : State<Enemy>
 
     private float _scanTimer;
     
-    public override void Enter() => _character._agent.isStopped = true;
+    public override void Enter() => _character.Agent.isStopped = true;
 
     public override void LogicUpdate()
     {

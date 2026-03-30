@@ -59,8 +59,8 @@ public class SaveInteractor : ISaveInteractor
             if (savedEnemy != null)
             {
                 // Телепортируем (для NavMeshAgent нужен Warp)
-                if (enemy._agent != null)
-                    enemy._agent.Warp(new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ));
+                if (enemy.Agent != null)
+                    enemy.Agent.Warp(new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ));
                 else
                     enemy.transform.position = new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ);
 
