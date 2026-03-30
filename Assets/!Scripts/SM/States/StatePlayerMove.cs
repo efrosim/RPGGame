@@ -2,7 +2,16 @@ using UnityEngine;
 
 public class StatePlayerMove : State<PlayerController>, IPhysicsState 
 {
+    private static readonly int LocomotionHash = Animator.StringToHash("Locomotion");
+    private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    private const float CrossFadeDuration = 0.1f;
+
     public StatePlayerMove(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
+
+    public override void Enter()
+    {
+        _character._animator.CrossFadeInFixedTime(LocomotionHash, CrossFadeDuration);
+    }
 
     public override void LogicUpdate() { }
 
@@ -17,5 +26,8 @@ public class StatePlayerMove : State<PlayerController>, IPhysicsState
 
         Vector3 targetVelocity = dir * (_character._moveSpeed * speedMod);
         _character._rb.linearVelocity = new Vector3(targetVelocity.x, _character._rb.linearVelocity.y, targetVelocity.z);
+
+        // Передаем скорость в Blend Tree Аниматора
+        _character._animator.SetFloat(SpeedHash, dir.magnitude * speedMod);
     }
 }

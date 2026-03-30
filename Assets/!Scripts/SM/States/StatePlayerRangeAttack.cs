@@ -1,12 +1,15 @@
+using UnityEngine;
+
 public class StatePlayerRangeAttack : StatePlayerAttack
 {
-    public StatePlayerRangeAttack(PlayerController character, StateMachine stateMachine) : base(character, stateMachine)
-    {
-    }
+    protected override int AttackHash => Animator.StringToHash("RangeAttack");
+
+    public StatePlayerRangeAttack(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
 
     public override void OnAnimationEvent(AnimationEventType eventType)
     {
-        if (eventType == AnimationEventType.DealDamage) _character.Range.Use();
+        if (eventType == AnimationEventType.DealDamage) 
+            _character.Range.Use();
         base.OnAnimationEvent(eventType);
     }
 }

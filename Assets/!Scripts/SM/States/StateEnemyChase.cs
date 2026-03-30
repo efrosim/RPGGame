@@ -2,10 +2,18 @@ using UnityEngine;
 
 public class StateEnemyChase : State<Enemy>, IPhysicsState
 {
+    private static readonly int ChaseHash = Animator.StringToHash("Chase");
+    private const float CrossFadeDuration = 0.1f;
+
     public StateEnemyChase(Enemy character, StateMachine stateMachine) : base(character, stateMachine) { }
 
-    public override void Enter() => _character.Agent.isStopped = false;
-    public override void Exit() => _character._animator.SetBool("IsChase", false);
+    public override void Enter() 
+    {
+        _character.Agent.isStopped = false;
+        _character._animator.CrossFadeInFixedTime(ChaseHash, CrossFadeDuration);
+    }
+
+    public override void Exit() { }
 
     public override void LogicUpdate()
     {
@@ -28,6 +36,6 @@ public class StateEnemyChase : State<Enemy>, IPhysicsState
     {
         if (_character.Target == null) return;
         _character.Agent.destination = _character.Target.TargetPosition;
-        _character._animator.SetBool("IsChase", _character.Agent.velocity.sqrMagnitude >= 0.01f);
+        // SetBool("IsChase") удален, так как стейт сам контролирует анимацию
     }
 }
