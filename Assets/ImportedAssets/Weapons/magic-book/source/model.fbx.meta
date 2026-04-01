@@ -3,7 +3,67 @@ guid: 765a5054447474c498b987a4f5780af4
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: bot
+    second: {fileID: 2100000, guid: 360b72c9bbb260045a088a168db91eb4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cover
+    second: {fileID: 2100000, guid: 9f168c20ae70a654d8bf65437e85955e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: m1
+    second: {fileID: 2100000, guid: aecf2337bf1547244b53c7016ad74e3f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: middle
+    second: {fileID: 2100000, guid: 25fabb9cd895e484ea99f314e9233df5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: middlepento_1
+    second: {fileID: 2100000, guid: efc7b44f7ad473e4fbded3080d9b46b6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: middlepento_2
+    second: {fileID: 2100000, guid: b886ac51bee7c8b4a975934a67a91cee, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: middlepento_3
+    second: {fileID: 2100000, guid: a5821115bf57ab844888270d5579670c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: middlepento_4
+    second: {fileID: 2100000, guid: 9c777f2ee874625498298b6c0b44c03f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: minipentogrtamm
+    second: {fileID: 2100000, guid: f6f73a0bff4c01342b43433ef2cdc876, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pages
+    second: {fileID: 2100000, guid: 084643501de81924985b8ae47dd062db, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: top
+    second: {fileID: 2100000, guid: 0607f3be4aae27e419418e33a048b33a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tri
+    second: {fileID: 2100000, guid: b34d9cb401d2136479b8bb05dfce825f, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
