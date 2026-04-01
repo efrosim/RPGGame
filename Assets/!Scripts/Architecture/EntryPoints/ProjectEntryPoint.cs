@@ -9,7 +9,7 @@ public class ProjectEntryPoint : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         IAudioService audioService = new UnityAudioService();
-        ISaveRepository saveRepository = new JsonSaveRepository(); 
+        IRepository saveRepository = new JsonGameStateRepository(); 
         ISceneLoaderService sceneLoader = new UnitySceneLoader();
 
         ServiceLocator.Register(audioService);

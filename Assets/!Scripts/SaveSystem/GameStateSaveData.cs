@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 [System.Serializable]
-public class SaveData
+public class GameStateSaveData
 {
     public float playerPosX, playerPosY, playerPosZ;
     public int playerHealth;

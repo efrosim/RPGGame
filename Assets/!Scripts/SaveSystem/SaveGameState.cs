@@ -1,27 +1,26 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class SaveInteractor : ISaveInteractor
+public class SaveGameState : ISaveInteractor
 {
-    private readonly ISaveRepository _repository;
-    private readonly PlayerController _player;
+    private readonly IRepository<GameStateSaveData> _repository;
 
-    public SaveInteractor(ISaveRepository repository, PlayerController player)
+    public SaveGameState(IRepository<GameStateSaveData> repository)
     {
         _repository = repository;
-        _player = player;
     }
 
     public bool HasSave() => _repository.HasSave();
 
     public void SaveGame()
     {
-        SaveData data = new SaveData
+        PlayerController player = Object.FindAnyObjectByType<PlayerController>();
+        GameStateSaveData data = new GameStateSaveData
         {
-            playerPosX = _player.transform.position.x,
-            playerPosY = _player.transform.position.y,
-            playerPosZ = _player.transform.position.z,
-            playerHealth = _player.HP,
+            playerPosX = player.transform.position.x,
+            playerPosY = player.transform.position.y,
+            playerPosZ = player.transform.position.z,
+            playerHealth = player.HP,
             enemies = new List<EnemySaveData>()
         };
 
@@ -43,22 +42,20 @@ public class SaveInteractor : ISaveInteractor
 
     public void LoadGame()
     {
-        SaveData data = _repository.Load();
+        GameStateSaveData data = _repository.Load();
         if (data == null) return;
 
-        // Восстанавливаем игрока
-        _player.transform.position = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
-        _player._rb.linearVelocity = Vector3.zero;
-        _player.SetHealth(data.playerHealth);
+        PlayerController player = Object.FindAnyObjectByType<PlayerController>();
+        player.transform.position = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
+        player._rb.linearVelocity = Vector3.zero;
+        player.SetHealth(data.playerHealth);
 
-        // Восстанавливаем врагов
         Enemy[] enemiesInScene = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
         foreach (var enemy in enemiesInScene)
         {
             var savedEnemy = data.enemies.Find(e => e.id == enemy.UniqueId);
             if (savedEnemy != null)
             {
-                // Телепортируем (для NavMeshAgent нужен Warp)
                 if (enemy.Agent != null)
                     enemy.Agent.Warp(new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ));
                 else
@@ -68,7 +65,6 @@ public class SaveInteractor : ISaveInteractor
             }
             else
             {
-                // Если врага нет в сохранении (он был убит до сохранения), уничтожаем его
                 Object.Destroy(enemy.gameObject);
             }
         }
