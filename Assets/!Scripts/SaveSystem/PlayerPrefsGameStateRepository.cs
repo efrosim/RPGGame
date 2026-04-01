@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-public class JsonSaveRepository : ISaveRepository
+public class PlayerPrefsGameStateRepository : IGameStateRepository
 {
     private const string SaveKey = "GameSaveData";
 
-    public void Save(SaveData data)
+    public void Save(GameState data)
     {
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(SaveKey, json);
@@ -12,12 +12,12 @@ public class JsonSaveRepository : ISaveRepository
         Debug.Log("Данные сохранены в репозиторий: " + json);
     }
 
-    public SaveData Load()
+    public GameState Load()
     {
         if (HasSave())
         {
             string json = PlayerPrefs.GetString(SaveKey);
-            return JsonUtility.FromJson<SaveData>(json);
+            return JsonUtility.FromJson<GameState>(json);
         }
         return null;
     }

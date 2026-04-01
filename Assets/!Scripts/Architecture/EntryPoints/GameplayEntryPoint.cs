@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameplayEntryPoint : MonoBehaviour
@@ -18,10 +18,12 @@ public class GameplayEntryPoint : MonoBehaviour
 
     private void Start()
     {
-        var saveRepository = ServiceLocator.Get<ISaveRepository>();
+        var saveRepository = ServiceLocator.Get<IGameStateRepository>();
         var sceneLoader = ServiceLocator.Get<ISceneLoaderService>();
+        
+        IEnemyRegistry enemyRegistry = new SceneEnemyRegistry();
 
-        ISaveInteractor saveInteractor = new SaveInteractor(saveRepository, _player);
+        IGameStateInteractor saveInteractor = new GameStateInteractor(saveRepository, _player, enemyRegistry);
 
         _pauseController = new PauseMenuController(_pauseView, saveInteractor, sceneLoader, _mainMenuSceneIndex);
         

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : Character, IGameOverTrigger
+public class PlayerController : Character, IGameOverTrigger, IPlayerStateProvider
 {
     
     [Header("Weapons")][Tooltip("Объект с компонентом, реализующим IWeapon (Ближний бой)")]
@@ -155,5 +155,23 @@ public class PlayerController : Character, IGameOverTrigger
         {
             ChangeState<StatePlayerHit>(); // Переходим в микро-стан
         }
+    }
+
+    public PlayerState GetState()
+    {
+        return new PlayerState
+        {
+            PosX = transform.position.x,
+            PosY = transform.position.y,
+            PosZ = transform.position.z,
+            Health = HP
+        };
+    }
+
+    public void RestoreState(PlayerState state)
+    {
+        transform.position = new Vector3(state.PosX, state.PosY, state.PosZ);
+        if (_rb != null) _rb.linearVelocity = Vector3.zero;
+        SetHealth((int)state.Health);
     }
 }

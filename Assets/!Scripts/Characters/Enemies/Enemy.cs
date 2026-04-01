@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(TargetScanner))]
-public abstract class Enemy : Character
+public abstract class Enemy : Character, IEnemyStateProvider
 {
     public string UniqueId { get; private set; }
 
@@ -65,5 +65,32 @@ public abstract class Enemy : Character
     private void HandleDeath()
     {
         Destroy(gameObject, 2.5f);
+    }
+
+    public EnemyState GetState()
+    {
+        return new EnemyState
+        {
+            Id = UniqueId,
+            PosX = transform.position.x,
+            PosY = transform.position.y,
+            PosZ = transform.position.z,
+            Health = HP
+        };
+    }
+
+    public void RestoreState(EnemyState state)
+    {
+        if (Agent != null)
+            Agent.Warp(new Vector3(state.PosX, state.PosY, state.PosZ));
+        else
+            transform.position = new Vector3(state.PosX, state.PosY, state.PosZ);
+
+        SetHealth((int)state.Health);
+    }
+
+    public void DestroyEntity()
+    {
+        Destroy(gameObject);
     }
 }

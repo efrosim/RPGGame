@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class ProjectEntryPoint : MonoBehaviour
 {
@@ -9,7 +9,7 @@ public class ProjectEntryPoint : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         IAudioService audioService = new UnityAudioService();
-        ISaveRepository saveRepository = new JsonSaveRepository(); 
+        IGameStateRepository saveRepository = new PlayerPrefsGameStateRepository(); 
         ISceneLoaderService sceneLoader = new UnitySceneLoader();
 
         ServiceLocator.Register(audioService);

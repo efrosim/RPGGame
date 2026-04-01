@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class PauseMenuController
 {
     private readonly PauseMenuView _view;
-    private readonly ISaveInteractor _saveInteractor; 
+    private readonly IGameStateInteractor _saveInteractor; 
     private readonly ISceneLoaderService _sceneLoader;
     private readonly int _mainMenuIndex;
 
     private bool _isPaused = false;
 
-    public PauseMenuController(PauseMenuView view, ISaveInteractor saveInteractor, ISceneLoaderService sceneLoader, int mainMenuIndex)
+    public PauseMenuController(PauseMenuView view, IGameStateInteractor saveInteractor, ISceneLoaderService sceneLoader, int mainMenuIndex)
     {
         _view = view;
         _saveInteractor = saveInteractor;
