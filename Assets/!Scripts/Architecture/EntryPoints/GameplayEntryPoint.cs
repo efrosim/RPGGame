@@ -6,7 +6,9 @@ public class GameplayEntryPoint : MonoBehaviour
     [Header("UI Views")]
     [SerializeField] private PauseMenuView _pauseView;
     [SerializeField] private MagicCooldownUI _magicCooldownUI;
-    [SerializeField] private GameObject _restartCanvas;[Header("Scene References")]
+    [SerializeField] private GameObject _restartCanvas;
+    
+    [Header("Scene References")]
     [SerializeField] private PlayerController _player;
     
     [Header("Settings")]
@@ -18,10 +20,13 @@ public class GameplayEntryPoint : MonoBehaviour
 
     private void Start()
     {
+        // Внутри GameplayEntryPoint.cs:
         var saveRepository = ServiceLocator.Get<ISaveRepository>();
         var sceneLoader = ServiceLocator.Get<ISceneLoaderService>();
+        var savableRegistry = ServiceLocator.Get<SaveableRegistry>(); 
 
-        ISaveInteractor saveInteractor = new SaveInteractor(saveRepository, _player);
+        // Передаем реестр в Интерактор
+        ISaveInteractor saveInteractor = new SaveInteractor(saveRepository, savableRegistry);
 
         _pauseController = new PauseMenuController(_pauseView, saveInteractor, sceneLoader, _mainMenuSceneIndex);
         

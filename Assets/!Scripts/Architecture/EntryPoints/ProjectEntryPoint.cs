@@ -11,7 +11,10 @@ public class ProjectEntryPoint : MonoBehaviour
         IAudioService audioService = new UnityAudioService();
         ISaveRepository saveRepository = new JsonSaveRepository(); 
         ISceneLoaderService sceneLoader = new UnitySceneLoader();
-
+        
+        SaveableRegistry saveableRegistry = new SaveableRegistry();
+        ServiceLocator.Register(saveableRegistry);
+        
         ServiceLocator.Register(audioService);
         ServiceLocator.Register(saveRepository);
         ServiceLocator.Register(sceneLoader);
