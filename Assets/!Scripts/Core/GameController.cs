@@ -28,7 +28,7 @@ public class GameController
     
     public async void GameLose()
     {
-        if (_isGameOver) return; // Защита от двойного срабатывания
+        if (_isGameOver) return;
         _isGameOver = true;
 
         PauseGame();
