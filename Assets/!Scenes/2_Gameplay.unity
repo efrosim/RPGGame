@@ -3369,6 +3369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 321688391}
   - component: {fileID: 321688390}
+  - component: {fileID: 321688392}
   m_Layer: 0
   m_Name: '[GameplayEntryPoint]'
   m_TagString: Untagged
@@ -3409,6 +3410,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &321688392
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 321688389}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b2c62ac3bcd44fb9e09835581422057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: VContainer::VContainer.Unity.LifetimeScope
+  parentReference:
+    TypeName: GameLifetimeScope
+  autoRun: 1
+  autoInjectGameObjects:
+  - {fileID: 321688389}
 --- !u!1 &321785943 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4064204425846201723, guid: 58ee03c36af47554cb024f6f922f81e9, type: 3}

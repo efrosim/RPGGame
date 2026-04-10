@@ -15,11 +15,21 @@ public class MainMenuEntryPoint : MonoBehaviour
     {
         _audioService = audioService;
         _sceneLoader = sceneLoader;
+
+        Debug.Log("Here");
+
+        if (_audioService != null)
+        {
+            Debug.Log("1 MainMenuEntryPoint");
+        }
+        if (_sceneLoader != null)
+        {
+            Debug.Log("2 MainMenuEntryPoint");
+        }
     }
 
     private void Start()
     {
-        // Собираем MVC
         _controller = new MainMenuController(_view, _audioService, _sceneLoader, _gameplaySceneIndex);
     }
 }

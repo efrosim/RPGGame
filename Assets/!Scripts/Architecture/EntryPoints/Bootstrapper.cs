@@ -6,9 +6,8 @@ public class Bootstrapper : IStartable
 {
     private readonly IAudioService _audioService;
     private readonly ISceneLoaderService _sceneLoader;
-    private readonly int _mainMenuSceneIndex; // Убрали жесткую привязку "= 1"
+    private readonly int _mainMenuSceneIndex;
 
-    // Добавили int mainMenuSceneIndex в параметры
     public Bootstrapper(IAudioService audioService, ISceneLoaderService sceneLoader, int mainMenuSceneIndex)
     {
         _audioService = audioService;
@@ -18,7 +17,6 @@ public class Bootstrapper : IStartable
 
     public void Start()
     {
-        // First scene load setup
         _audioService.SetVolume(_audioService.GetVolume());
         _sceneLoader.LoadScene(_mainMenuSceneIndex);
     }

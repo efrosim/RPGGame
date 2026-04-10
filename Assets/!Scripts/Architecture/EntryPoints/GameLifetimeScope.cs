@@ -19,7 +19,7 @@ public class GameLifetimeScope : LifetimeScope
         // Interactors
         builder.Register<ISaveInteractor, SaveInteractor>(Lifetime.Singleton);
 
-        // Bootstrapper handling the initial launch (ПЕРЕДАЕМ ПАРАМЕТР СЮДА)
+        // Bootstrapper handling the initial launch
         builder.RegisterEntryPoint<Bootstrapper>().WithParameter(_mainMenuSceneIndex);
     }
 }
