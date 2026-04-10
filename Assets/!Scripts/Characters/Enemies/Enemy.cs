@@ -57,9 +57,19 @@ public abstract class Enemy : Character
     protected override void OnHitReceived(int dmg, DamageType type)
     {
         if (HP <= 0) 
+        {
             ChangeState<StateEnemyDead>();
+            var entryPoint = UnityEngine.Object.FindAnyObjectByType<GameplayEntryPoint>(); 
+            entryPoint?.RegisterEnemyKill();
+        }
+        else if (HP <= MaxHP * 0.3f && !(this is Boss)) 
+        {
+            ChangeState<StateEnemyFlee>();
+        }
         else 
+        {
             ChangeState<StateEnemyHit>(); 
+        }
     }
 
     private void HandleDeath()

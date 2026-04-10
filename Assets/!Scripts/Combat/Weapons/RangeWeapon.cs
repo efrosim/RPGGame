@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class RangeWeapon : MonoBehaviour, IWeapon
 {
@@ -6,11 +6,11 @@ public class RangeWeapon : MonoBehaviour, IWeapon
     public GameObject _shellPrefab;
     public Transform _shellSpawnPos;
 
-    public void Shoot()
+    public virtual void Shoot()
     {
         GameObject shell = Instantiate(_shellPrefab, _shellSpawnPos.position, _shellSpawnPos.rotation);
         shell.GetComponent<Shell>().SetDamage(_dmg);
     }
     
-    public void Use() => Shoot();
+    public virtual void Use() => Shoot();
 }

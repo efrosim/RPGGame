@@ -1,4 +1,4 @@
-public abstract class State<T> : IState where T : Character 
+public abstract class State<T> : IState where T : class 
 {
     protected T _character;
     protected StateMachine _SM;

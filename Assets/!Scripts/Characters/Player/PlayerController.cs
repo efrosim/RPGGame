@@ -1,159 +1,81 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public class PlayerController : Character, IGameOverTrigger
+public class PlayerController : IDisposable
 {
-    
-    [Header("Weapons")][Tooltip("Объект с компонентом, реализующим IWeapon (Ближний бой)")]
-    [SerializeField] private GameObject _meleeWeaponObj;
-    [Tooltip("Объект с компонентом, реализующим IWeapon (Дальний бой)")]
-    [SerializeField] private GameObject _rangeWeaponObj;
-    
-    [Header("Toggle Object")] 
-    [Tooltip("Объект, который будет включаться и выключаться по кнопке")] 
-    [SerializeField] private GameObject _objectToToggle; 
+    private readonly PlayerModel _model;
+    private readonly PlayerView _view;
+    private readonly StateMachine _sm;
 
-    public Rigidbody _rb { get; private set; }
-    public IWeapon Melee { get; private set; } 
-    public IWeapon Range { get; private set; }
-    public CooldownTimer MagicCooldown { get; private set; }
-
-    [Header("Movement Stats")]
-    [SerializeField] private float _moveSpeed = 5f; 
-    [SerializeField] private float _rotSpeed = 2f;
-
-    public float MoveSpeed => _moveSpeed;
-    public float RotSpeed => _rotSpeed;
-    
-    [Header("Input")]
-    public InputActionReference _move;
-    public InputActionReference _shift;
-    public InputActionReference _primeAttack;
-    public InputActionReference _secondAttack;
-    public InputActionReference _rotation;
-    public InputActionReference _toggleInput;
-
-    private StateMachine _SM;
-    private Dictionary<Type, IState> _states = new Dictionary<Type, IState>();
-
-    protected override void Awake()
+    public PlayerController(PlayerModel model, PlayerView view)
     {
-        base.Awake();
-        _rb = GetComponent<Rigidbody>();
-        
-        // Создаем чистый C# класс вместо GetComponent
-        MagicCooldown = new CooldownTimer(2f); 
-        
-        if (_meleeWeaponObj != null) Melee = _meleeWeaponObj.GetComponent<IWeapon>();
-        if (_rangeWeaponObj != null) Range = _rangeWeaponObj.GetComponent<IWeapon>();
-        
-        _SM = new StateMachine();
+        _model = model;
+        _view = view;
+        _sm = new StateMachine();
 
-        AddState(new StatePlayerMove(this, _SM));
-        AddState(new StatePlayerMeleeAttack(this, _SM));
-        AddState(new StatePlayerRangeAttack(this, _SM));
-        AddState(new StatePlayerHit(this, _SM)); 
-        
-        ChangeState<StatePlayerMove>();
+        _sm.ChangeState(new StatePlayerMove(_view, _sm)); 
+
+        _view.OnMoveInputEvent += HandleMoveInput;
+        _view.OnPrimeAttackEvent += HandlePrimeAttack;
+        _view.OnSecondAttackEvent += HandleSecondAttack;
+        _view.OnHitEvent += HandleHit;
+
+        _model.OnDead += HandleDeath;
     }
 
-    private void AddState(IState state) => _states[state.GetType()] = state;
-
-    public void ChangeState<T>() where T : IState
+    private void HandleMoveInput(Vector2 input, bool isRunning)
     {
-        if (_states.TryGetValue(typeof(T), out IState state))
-            _SM.ChangeState(state);
+        // Currently state logic handles it inside StatePlayerMove,
+        // but we might need to route it. For now let StatePlayerMove read from View directly.
     }
 
-    private void OnEnable()
+    private void HandlePrimeAttack()
     {
-        _move.action.Enable(); 
-        _shift.action.Enable();
-        _primeAttack.action.Enable(); 
-        _secondAttack.action.Enable(); 
-        _rotation.action.Enable();
-        _toggleInput.action.Enable(); 
-
-        _primeAttack.action.performed += OnPrimeAttack;
-        _secondAttack.action.performed += OnSecondAttack;
-        _toggleInput.action.performed += OnToggleAction; 
+        if (_sm._curState is StatePlayerMove)
+            _sm.ChangeState(new StatePlayerMeleeAttack(_view, _sm));
     }
 
-    private void OnDisable()
+    private void HandleSecondAttack()
     {
-        _primeAttack.action.performed -= OnPrimeAttack;
-        _secondAttack.action.performed -= OnSecondAttack;
-        _toggleInput.action.performed -= OnToggleAction; 
-
-        _move.action.Disable(); 
-        _shift.action.Disable();
-        _primeAttack.action.Disable(); 
-        _secondAttack.action.Disable(); 
-        _rotation.action.Disable();
-        _toggleInput.action.Disable();
-    }
-
-    public void DisableInput()
-    {
-        _move.action.Disable(); 
-        _shift.action.Disable();
-        _primeAttack.action.Disable(); 
-        _secondAttack.action.Disable(); 
-        _rotation.action.Disable();
-        _toggleInput.action.Disable();
-    }
-    
-    
-    private void OnPrimeAttack(InputAction.CallbackContext ctx)
-    {
-        if (_SM._curState is StatePlayerMove)
-            ChangeState<StatePlayerMeleeAttack>();
-    }
-
-    private void OnSecondAttack(InputAction.CallbackContext ctx)
-    {
-        if (_SM._curState is StatePlayerMove && MagicCooldown.IsReady)
+        if (_sm._curState is StatePlayerMove && _model.MagicCooldown.IsReady)
         {
-            MagicCooldown.StartCooldown();
-            ChangeState<StatePlayerRangeAttack>();
+            _model.MagicCooldown.StartCooldown();
+            _sm.ChangeState(new StatePlayerRangeAttack(_view, _sm));
         }
     }
-    
-    private void OnToggleAction(InputAction.CallbackContext ctx)
-    {
-        if (_objectToToggle != null)
-        {
-            _objectToToggle.SetActive(!_objectToToggle.activeSelf);
-        }
-        else
-        {
-            Debug.LogWarning("Объект для переключения не назначен в инспекторе!");
-        }
-    }
-    
-    private void Update() 
-    {
-        _SM.LogicUpdate();
-        if (MagicCooldown != null)
-        {
-            MagicCooldown.Tick(Time.deltaTime);
-        } 
-    }
-    
-    private void FixedUpdate() => _SM.PhysicsUpdate();
-    public void OnAnimationEvent(AnimationEventType eventType) => _SM.OnAnimationEvent(eventType);
 
-    protected override void OnHitReceived(int dmg, DamageType type)
+    private void HandleHit(int dmg, DamageType type)
     {
-        if (HP <= 0)
+        _model.Health -= dmg;
+        if (_model.Health > 0)
         {
-            DisableInput();
+            _sm.ChangeState(new StatePlayerHit(_view, _sm));
         }
-        else
-        {
-            ChangeState<StatePlayerHit>(); // Переходим в микро-стан
-        }
+    }
+
+    private void HandleDeath()
+    {
+        _view.DisableInput();
+        _sm.ChangeState(new StatePlayerHit(_view, _sm)); // Or dead state
+    }
+
+    public void LogicUpdate()
+    {
+        _sm.LogicUpdate();
+        _model.MagicCooldown.Tick(Time.deltaTime);
+    }
+
+    public void PhysicsUpdate()
+    {
+        _sm.PhysicsUpdate();
+    }
+
+    public void Dispose()
+    {
+        _view.OnMoveInputEvent -= HandleMoveInput;
+        _view.OnPrimeAttackEvent -= HandlePrimeAttack;
+        _view.OnSecondAttackEvent -= HandleSecondAttack;
+        _view.OnHitEvent -= HandleHit;
+        _model.OnDead -= HandleDeath;
     }
 }

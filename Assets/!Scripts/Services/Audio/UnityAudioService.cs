@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class UnityAudioService : IAudioService
 {
@@ -12,4 +12,14 @@ public class UnityAudioService : IAudioService
     }
 
     public float GetVolume() => PlayerPrefs.GetFloat(VolumeKey, 1f);
+
+    public void PlayMusic(AudioClip clip)
+    {
+        var go = new GameObject("GlobalMusic");
+        var source = go.AddComponent<AudioSource>();
+        source.clip = clip;
+        source.loop = true;
+        source.Play();
+        Object.DontDestroyOnLoad(go);
+    }
 }

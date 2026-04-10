@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class StateEnemyHit : State<Enemy>
 {
@@ -15,6 +15,10 @@ public class StateEnemyHit : State<Enemy>
         _character.Agent.isStopped = true; // Останавливаем врага
         _character._animator.CrossFadeInFixedTime(HitHash, CrossFadeDuration);
         _stunTimer = 0f;
+
+        // Если мирный режим, при получении урона враг агрится на игрока
+        if (_character.Target == null)
+            _character.Target = _character.Scanner.Scan();
     }
 
     public override void LogicUpdate()
