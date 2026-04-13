@@ -9,14 +9,11 @@ public enum BossElement
 public class Boss : Enemy
 {
     public BossElement Element { get; private set; }
-    
-    // Boss can use generic IWeapon but maybe has unique ones
-    public IWeapon Weapon { get; private set; }
+    public bool IsMeleeWeapon { get; private set; }
+    public IBossAttackEffectStrategy AttackEffect { get; private set; }
 
     [SerializeField] private Material _fireMat, _iceMat, _earthMat, _aetherMat;
-    [SerializeField] private Renderer _renderer;
-    
-    [Header("Boss Actions Config")]
+    [SerializeField] private Renderer _renderer;[Header("Boss Actions Config")]
     public float HeavyAttackRange = 3f;
     public float TeleportCooldown = 15f;
     public float ShieldCooldown = 20f;
@@ -30,11 +27,14 @@ public class Boss : Enemy
     {
         base.Awake();
 
-        // Assign random element (Lab 6 extra: 4 elements)
         Element = (BossElement)UnityEngine.Random.Range(0, 4);
+        IsMeleeWeapon = UnityEngine.Random.value > 0.5f; // Случайный тип оружия
+        
         ApplyElementVisuals();
+        
+        // Получаем уникальную стратегию эффекта
+        AttackEffect = BossEffectFactory.GetEffect(Element, IsMeleeWeapon);
 
-        // States: Idle, Chase, Attack, HeavyAttack, Teleport, Shield, Summon
         AddState(new StateBossIdle(this, _SM));
         AddState(new StateBossChase(this, _SM));
         AddState(new StateBossAttack(this, _SM));
@@ -42,6 +42,7 @@ public class Boss : Enemy
         AddState(new StateBossTeleport(this, _SM));
         AddState(new StateBossShield(this, _SM));
         AddState(new StateBossSummon(this, _SM));
+        AddState(new StateEnemyHit(this, _SM));
 
         ChangeState<StateBossIdle>();
     }
@@ -58,9 +59,13 @@ public class Boss : Enemy
         }
     }
 
+    public void PlayAttackEffect()
+    {
+        AttackEffect?.PlayEffect(transform);
+    }
+
     public override void TransitionToAttackState()
     {
-        // Decide which attack based on cooldowns and distance
         if (Time.time - LastShieldTime > ShieldCooldown && HP < MaxHP * 0.5f)
         {
             ChangeState<StateBossShield>();
@@ -81,16 +86,8 @@ public class Boss : Enemy
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {
-        base.OnHitReceived(dmg, type);
+        base.OnHitReceived(dmg, type); 
         
-        // If neutral in peaceful mode, and we are in idle, we switch to chase
-        if (_SM._curState is StateBossIdle && GameController.IsPeacefulMode)
-        {
-            if (Target == null) Target = Scanner.Scan();
-            ChangeState<StateBossChase>();
-        }
-        
-        // Maybe teleport away if taking too much damage
         if (Time.time - LastTeleportTime > TeleportCooldown && UnityEngine.Random.value > 0.7f)
         {
             ChangeState<StateBossTeleport>();

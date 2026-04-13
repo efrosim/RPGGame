@@ -2,23 +2,26 @@ using UnityEngine;
 
 public class StateEnemyHit : State<Enemy>
 {
-    private static readonly int HitHash = Animator.StringToHash("Hit"); // Имя анимации получения урона
+    private static readonly int HitHash = Animator.StringToHash("Hit");
     private const float CrossFadeDuration = 0.1f;
     
     private float _stunTimer;
-    private const float StunDuration = 0.5f; // Длительность микро-стана в секундах
+    private const float StunDuration = 0.5f; 
 
     public StateEnemyHit(Enemy character, StateMachine stateMachine) : base(character, stateMachine) { }
 
     public override void Enter()
     {
-        _character.Agent.isStopped = true; // Останавливаем врага
+        _character.Agent.isStopped = true; 
         _character._animator.CrossFadeInFixedTime(HitHash, CrossFadeDuration);
         _stunTimer = 0f;
 
-        // Если мирный режим, при получении урона враг агрится на игрока
-        if (_character.Target == null)
-            _character.Target = _character.Scanner.Scan();
+        // В мирном режиме обычные мобы игнорируют обидчика. Босс - агрится.
+        if (!GameController.IsPeacefulMode || _character is Boss)
+        {
+            if (_character.Target == null)
+                _character.Target = _character.Scanner.Scan();
+        }
     }
 
     public override void LogicUpdate()
@@ -26,8 +29,16 @@ public class StateEnemyHit : State<Enemy>
         _stunTimer += Time.deltaTime;
         if (_stunTimer >= StunDuration)
         {
-            // После стана враг сразу переходит в погоню (агрится)
-            _character.ChangeState<StateEnemyChase>();
+            if (GameController.IsPeacefulMode && !(_character is Boss))
+            {
+                // Обычный моб в мирном режиме не агрится
+                _character.ChangeState<StateEnemyIdle>();
+            }
+            else
+            {
+                // Агрессивный режим или это Босс (он агрится после первого удара)
+                _character.ChangeState<StateEnemyChase>();
+            }
         }
     }
 }

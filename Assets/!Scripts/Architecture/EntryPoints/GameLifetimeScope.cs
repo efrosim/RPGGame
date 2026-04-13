@@ -19,6 +19,16 @@ public class GameLifetimeScope : LifetimeScope
         // Interactors
         builder.Register<ISaveInteractor, SaveInteractor>(Lifetime.Singleton);
 
+        // Factories
+        builder.Register<IWeaponFactory, EnemyWeaponFactory>(Lifetime.Singleton);
+
+        // Инжектим зависимости во все LocalSpawner, которые уже висят на сцене
+        var spawners = FindObjectsByType<LocalSpawner>(FindObjectsSortMode.None);
+        foreach (var spawner in spawners)
+        {
+            builder.RegisterComponent(spawner);
+        }
+
         // Bootstrapper handling the initial launch
         builder.RegisterEntryPoint<Bootstrapper>().WithParameter(_mainMenuSceneIndex);
     }

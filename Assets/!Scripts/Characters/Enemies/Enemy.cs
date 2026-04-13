@@ -6,9 +6,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(TargetScanner))]
 public abstract class Enemy : Character
 {
-    public string UniqueId { get; private set; }
-
-    [Header("Combat Settings")]
+    public string UniqueId { get; private set; }[Header("Combat Settings")]
     public float _attackRange;
     public float _idleRange;
 
@@ -49,6 +47,9 @@ public abstract class Enemy : Character
     }
 
     public abstract void TransitionToAttackState();
+    
+    // Метод для инъекции оружия через Фабрику
+    public virtual void InitWeapon(IWeapon weapon) { }
 
     protected virtual void Update() => _SM.LogicUpdate();
     protected virtual void FixedUpdate() => _SM.PhysicsUpdate();
@@ -64,6 +65,7 @@ public abstract class Enemy : Character
         }
         else if (HP <= MaxHP * 0.3f && !(this is Boss)) 
         {
+            // Убегает, если мало ХП (мирный режим не ломает это поведение)
             ChangeState<StateEnemyFlee>();
         }
         else 

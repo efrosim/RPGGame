@@ -6,15 +6,19 @@ public class EnemyMelee : Enemy
     {
         base.Awake(); 
 
-        Melee = GetComponent<IWeapon>();
-
         AddState(new StateEnemyChase(this, _SM));
         AddState(new StateEnemyIdle(this, _SM));
         AddState(new StateEnemyMeleeAttack(this, _SM));
         AddState(new StateEnemyDead(this, _SM));
         AddState(new StateEnemyHit(this, _SM)); 
+        AddState(new StateEnemyFlee(this, _SM));
         
         ChangeState<StateEnemyIdle>();
+    }
+
+    public override void InitWeapon(IWeapon weapon)
+    {
+        Melee = weapon;
     }
 
     public override void TransitionToAttackState() => ChangeState<StateEnemyMeleeAttack>();
