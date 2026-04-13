@@ -3,7 +3,12 @@ guid: 29f21bc6353d9fc4aad24ec9fd5c16be
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: darkgreatsword1
+    second: {fileID: 2100000, guid: ebcaeab4d7c1af441b76d70daa57c93e, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
