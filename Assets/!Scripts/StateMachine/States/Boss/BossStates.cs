@@ -67,8 +67,11 @@ public class StateBossAttack : State<Boss>
     public StateBossAttack(Boss character, StateMachine sm) : base(character, sm) { }
     public override void Enter() { 
         _character.Agent.isStopped = true; 
-        _timer = 1f; // fake animation time
+        _timer = 1f; 
         _character._animator?.CrossFade("Attack", 0.1f);
+        
+        // Вызов уникального эффекта стратегии
+        _character.PlayAttackEffect();
     }
     public override void LogicUpdate() {
         _timer -= Time.deltaTime;
@@ -84,6 +87,9 @@ public class StateBossHeavyAttack : State<Boss>
         _character.Agent.isStopped = true; 
         _timer = 2f; 
         _character._animator?.CrossFade("HeavyAttack", 0.1f);
+        
+        // Вызов уникального эффекта стратегии
+        _character.PlayAttackEffect();
     }
     public override void LogicUpdate() {
         _timer -= Time.deltaTime;
