@@ -28,4 +28,7 @@ public class StateMachine
         if (_curState is IAnimationState animState)
             animState.OnAnimationEvent(eventType);
     }
+
+    // Пробрасываем получение урона в текущее состояние
+    public void OnHit(int dmg, DamageType type) => _curState?.OnHit(dmg, type);
 }

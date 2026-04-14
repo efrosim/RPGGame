@@ -49,7 +49,8 @@ public class PlayerController : IDisposable
         _model.Health -= dmg;
         if (_model.Health > 0)
         {
-            _sm.ChangeState(new StatePlayerHit(_view, _sm));
+            // Передаем урон в StateMachine вместо жесткого переключения стейта
+            _sm.OnHit(dmg, type); 
         }
     }
 
@@ -78,4 +79,5 @@ public class PlayerController : IDisposable
         _view.OnHitEvent -= HandleHit;
         _model.OnDead -= HandleDeath;
     }
+    
 }

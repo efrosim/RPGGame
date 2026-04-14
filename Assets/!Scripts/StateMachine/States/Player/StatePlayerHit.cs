@@ -25,4 +25,9 @@ public class StatePlayerHit : State<PlayerView>
             _SM.ChangeState(new StatePlayerMove(_character, _SM));
         }
     }
+    
+    public override void OnHit(int dmg, DamageType type)
+    {
+        _stunTimer = 0f; // Продлеваем стан при получении серии ударов
+    }
 }

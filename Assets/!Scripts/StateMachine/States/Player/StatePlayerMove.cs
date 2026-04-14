@@ -30,4 +30,9 @@ public class StatePlayerMove : State<PlayerView>, IPhysicsState
         // Передаем скорость в Blend Tree Аниматора
         _character._animator.SetFloat(SpeedHash, dir.magnitude * speedMod);
     }
+    
+    public override void OnHit(int dmg, DamageType type)
+    {
+        _SM.ChangeState(new StatePlayerHit(_character, _SM));
+    }
 }

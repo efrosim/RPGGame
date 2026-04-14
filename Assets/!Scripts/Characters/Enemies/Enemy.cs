@@ -63,14 +63,11 @@ public abstract class Enemy : Character
             var entryPoint = UnityEngine.Object.FindAnyObjectByType<GameplayEntryPoint>(); 
             entryPoint?.RegisterEnemyKill();
         }
-        else if (HP <= MaxHP * 0.3f && !(this is Boss)) 
-        {
-            // Убегает, если мало ХП (мирный режим не ломает это поведение)
-            ChangeState<StateEnemyFlee>();
-        }
         else 
         {
-            ChangeState<StateEnemyHit>(); 
+            // Теперь мы не форсируем ChangeState<StateEnemyHit>(), 
+            // а передаем решение текущему состоянию!
+            _SM.OnHit(dmg, type); 
         }
     }
 

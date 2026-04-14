@@ -62,4 +62,12 @@ public class StateEnemyFlee : State<Enemy>, IPhysicsState
     {
         _character.Agent.speed = _baseSpeed; // Reset speed
     }
+    
+    public override void OnHit(int dmg, DamageType type)
+    {
+        if (_character.HP <= _character.MaxHP * 0.3f && !(_character is Boss))
+            _character.ChangeState<StateEnemyFlee>();
+        else
+            _character.ChangeState<StateEnemyHit>();
+    }
 }

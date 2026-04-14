@@ -41,4 +41,9 @@ public class StateEnemyHit : State<Enemy>
             }
         }
     }
+    
+    public override void OnHit(int dmg, DamageType type)
+    {
+        _stunTimer = 0f; // Если бьют во время стана, таймер стана сбрасывается
+    }
 }

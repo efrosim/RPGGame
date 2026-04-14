@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum BossElement
@@ -13,7 +14,9 @@ public class Boss : Enemy
     public IBossAttackEffectStrategy AttackEffect { get; private set; }
 
     [SerializeField] private Material _fireMat, _iceMat, _earthMat, _aetherMat;
-    [SerializeField] private Renderer _renderer;[Header("Boss Actions Config")]
+    [SerializeField] private Renderer _renderer;
+
+    [Header("Boss Actions Config")]
     public float HeavyAttackRange = 3f;
     public float TeleportCooldown = 15f;
     public float ShieldCooldown = 20f;
@@ -23,17 +26,18 @@ public class Boss : Enemy
     public float LastShieldTime { get; set; }
     public float LastSummonTime { get; set; }
 
+    private List<BossElement> _availableElements;
+    private float _nextElementThreshold = 0.75f; // 75%, 50%, 25%
+
     protected override void Awake()
     {
         base.Awake();
 
-        Element = (BossElement)UnityEngine.Random.Range(0, 4);
-        IsMeleeWeapon = UnityEngine.Random.value > 0.5f; // Случайный тип оружия
+        // Инициализируем список доступных стихий
+        _availableElements = new List<BossElement> { BossElement.Fire, BossElement.Ice, BossElement.Earth, BossElement.Aether };
         
-        ApplyElementVisuals();
-        
-        // Получаем уникальную стратегию эффекта
-        AttackEffect = BossEffectFactory.GetEffect(Element, IsMeleeWeapon);
+        // Выбираем первую случайную стихию
+        SwitchToRandomElement();
 
         AddState(new StateBossIdle(this, _SM));
         AddState(new StateBossChase(this, _SM));
@@ -45,6 +49,22 @@ public class Boss : Enemy
         AddState(new StateEnemyHit(this, _SM));
 
         ChangeState<StateBossIdle>();
+    }
+
+    private void SwitchToRandomElement()
+    {
+        if (_availableElements.Count == 0) return;
+
+        int idx = UnityEngine.Random.Range(0, _availableElements.Count);
+        Element = _availableElements[idx];
+        _availableElements.RemoveAt(idx); // Убираем использованную стихию
+
+        IsMeleeWeapon = UnityEngine.Random.value > 0.5f;
+        AttackEffect = BossEffectFactory.GetEffect(Element, IsMeleeWeapon);
+        ApplyElementVisuals();
+
+        // Чисто визуальный эффект смены стихии
+        Debug.Log($"✨ [Boss] Смена стихии на {Element}! (Здесь срабатывают партиклы)");
     }
 
     private void ApplyElementVisuals()
@@ -67,27 +87,27 @@ public class Boss : Enemy
     public override void TransitionToAttackState()
     {
         if (Time.time - LastShieldTime > ShieldCooldown && HP < MaxHP * 0.5f)
-        {
             ChangeState<StateBossShield>();
-        }
         else if (Time.time - LastSummonTime > SummonCooldown)
-        {
             ChangeState<StateBossSummon>();
-        }
         else if (Target != null && Vector3.Distance(transform.position, Target.TargetPosition) <= HeavyAttackRange && UnityEngine.Random.value > 0.5f)
-        {
             ChangeState<StateBossHeavyAttack>();
-        }
         else
-        {
             ChangeState<StateBossAttack>();
-        }
     }
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {
         base.OnHitReceived(dmg, type); 
         
+        // Проверка на смену стихии
+        float hpPct = (float)HP / MaxHP;
+        if (hpPct <= _nextElementThreshold && _availableElements.Count > 0)
+        {
+            SwitchToRandomElement();
+            _nextElementThreshold -= 0.25f; // Следующий порог
+        }
+
         if (Time.time - LastTeleportTime > TeleportCooldown && UnityEngine.Random.value > 0.7f)
         {
             ChangeState<StateBossTeleport>();
