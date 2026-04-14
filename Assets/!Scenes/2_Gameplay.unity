@@ -8873,6 +8873,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 886411911}
   m_CullTransparentMesh: 1
+--- !u!1 &886797190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 886797191}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &886797191
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 886797190}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.095, y: 1.37, z: 1.72}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1579548313}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &899196291 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3238055113087279748, guid: 58ee03c36af47554cb024f6f922f81e9, type: 3}
@@ -21075,9 +21106,20 @@ PrefabInstance:
       propertyPath: _attackRange
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8981298518370461573, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
+      propertyPath: _meleeWeapon
+      value: 
+      objectReference: {fileID: 8366443750930885861}
+    - target: {fileID: 8981298518370461573, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
+      propertyPath: _rangeWeapon
+      value: 
+      objectReference: {fileID: 8366443750930885860}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7811899979420195746, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 886797191}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6436450504329944308, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
       insertIndex: -1
@@ -21085,6 +21127,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6436450504329944308, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8366443750930885859}
+    - targetCorrespondingSourceObject: {fileID: 6436450504329944308, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8366443750930885861}
+    - targetCorrespondingSourceObject: {fileID: 6436450504329944308, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8366443750930885860}
   m_SourcePrefab: {fileID: 100100000, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
 --- !u!114 &8366443750930885856 stripped
 MonoBehaviour:
@@ -21147,6 +21195,37 @@ CapsuleCollider:
   m_Height: 3.5502481
   m_Direction: 1
   m_Center: {x: 0, y: 1.8664408, z: 0}
+--- !u!114 &8366443750930885860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8366443750930885857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 232b0251999d4b0d9e59fb951d4928b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RangeWeapon
+  _dmg: 10
+  _shellPrefab: {fileID: 4613790050774815373, guid: 33e1f3b6604d69e47b68fdb7afa8486c, type: 3}
+  _shellSpawnPos: {fileID: 886797191}
+--- !u!114 &8366443750930885861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8366443750930885857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 031614909f79404fafb1285bf7c5b271, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MeleeWeapon
+  _dmg: 10
+  _hitCube: {x: 1.89, y: 1.5, z: 2.55}
+  _hitOffset: 2.04
+  _maxTargets: 20
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
