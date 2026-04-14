@@ -14,6 +14,8 @@ public class EnemyMelee : Enemy
         AddState(new StateEnemyFlee(this, _SM));
         
         ChangeState<StateEnemyIdle>();
+
+        if (TryGetComponent(out MeleeWeapon component)) Melee = component;
     }
 
     public override void InitWeapon(IWeapon weapon)

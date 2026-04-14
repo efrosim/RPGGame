@@ -14,6 +14,8 @@ public class EnemyRange : Enemy
         AddState(new StateEnemyFlee(this, _SM));
         
         ChangeState<StateEnemyIdle>();
+
+        if(TryGetComponent(out RangeWeapon component)) Range = component;
     }
 
     public override void InitWeapon(IWeapon weapon)

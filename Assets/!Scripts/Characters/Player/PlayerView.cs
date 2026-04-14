@@ -86,7 +86,11 @@ public class PlayerView : MonoBehaviour, IGameOverTrigger, IHittable, IHealth, I
         if (_objectToToggle != null) _objectToToggle.SetActive(!_objectToToggle.activeSelf);
     }
 
-    public void OnAnimationEvent(AnimationEventType eventType) => OnAnimation?.Invoke(eventType);
+    public void OnAnimationEvent(AnimationEventType eventType)
+    {
+        OnAnimation?.Invoke(eventType);
+    }
+
 
     public void GetHit(int dmg, DamageType type)
     {

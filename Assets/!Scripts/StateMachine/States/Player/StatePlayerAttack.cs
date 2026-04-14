@@ -9,12 +9,12 @@ public abstract class StatePlayerAttack : State<PlayerView>, IAnimationState
 
     public override void Enter() 
     {
-        // Останавливаем игрока, чтобы он не скользил во время удара
         _character.Rb.linearVelocity = Vector3.zero;
         _character._animator.CrossFadeInFixedTime(AttackHash, CrossFadeDuration);
+        _character.OnAnimation += (eventType) => OnAnimationEvent(eventType);
     }
 
-    public override void Exit() { }
+    public override void Exit() { _character.OnAnimation -= (eventType) => OnAnimationEvent(eventType); }
 
     public virtual void OnAnimationEvent(AnimationEventType eventType)
     {

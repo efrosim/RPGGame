@@ -32,11 +32,13 @@ public class StateBossIdle : State<Boss>
 
 public class StateBossChase : State<Boss>, IPhysicsState
 {
+    private static readonly int ChaseHash = Animator.StringToHash("Chase");
     public StateBossChase(Boss character, StateMachine sm) : base(character, sm) { }
 
     public override void Enter() 
     {
         _character.Agent.isStopped = false;
+        _character._animator.CrossFadeInFixedTime(ChaseHash, 0.1f);
     }
 
     public override void LogicUpdate()
