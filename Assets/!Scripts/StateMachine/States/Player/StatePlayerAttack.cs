@@ -1,24 +1,24 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-public abstract class StatePlayerAttack : State<PlayerController>, IAnimationState
+public abstract class StatePlayerAttack : State<PlayerView>, IAnimationState
 {
     protected abstract int AttackHash { get; }
     private const float CrossFadeDuration = 0.1f;
 
-    public StatePlayerAttack(PlayerController character, StateMachine stateMachine) : base(character, stateMachine) { }
+    public StatePlayerAttack(PlayerView character, StateMachine stateMachine) : base(character, stateMachine) { }
 
     public override void Enter() 
     {
-        // Останавливаем игрока, чтобы он не скользил во время удара
-        _character._rb.linearVelocity = Vector3.zero;
+        _character.Rb.linearVelocity = Vector3.zero;
         _character._animator.CrossFadeInFixedTime(AttackHash, CrossFadeDuration);
+        _character.OnAnimation += (eventType) => OnAnimationEvent(eventType);
     }
 
-    public override void Exit() { }
+    public override void Exit() { _character.OnAnimation -= (eventType) => OnAnimationEvent(eventType); }
 
     public virtual void OnAnimationEvent(AnimationEventType eventType)
     {
         if (eventType == AnimationEventType.AttackEnd) 
-            _character.ChangeState<StatePlayerMove>();
+            _SM.ChangeState(new StatePlayerMove(_character, _SM));
     }
 }

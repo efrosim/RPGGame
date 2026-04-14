@@ -1,34 +1,38 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 public class SaveInteractor : ISaveInteractor
 {
-    private readonly ISaveRepository _repository;
-    private readonly PlayerController _player;
+    private readonly IPlayerRepository _playerRepository;
+    private readonly IEnemyRepository _enemyRepository;
 
-    public SaveInteractor(ISaveRepository repository, PlayerController player)
+    public SaveInteractor(IPlayerRepository playerRepository, IEnemyRepository enemyRepository)
     {
-        _repository = repository;
-        _player = player;
+        _playerRepository = playerRepository;
+        _enemyRepository = enemyRepository;
     }
 
-    public bool HasSave() => _repository.HasSave();
+    public bool HasSave() => _playerRepository.HasSave();
 
     public void SaveGame()
     {
-        SaveData data = new SaveData
+        var player = UnityEngine.Object.FindAnyObjectByType<PlayerView>();
+        if (player != null)
         {
-            playerPosX = _player.transform.position.x,
-            playerPosY = _player.transform.position.y,
-            playerPosZ = _player.transform.position.z,
-            playerHealth = _player.HP,
-            enemies = new List<EnemySaveData>()
-        };
+            _playerRepository.Save(new PlayerSaveData
+            {
+                posX = player.transform.position.x,
+                posY = player.transform.position.y,
+                posZ = player.transform.position.z,
+                health = player.HP
+            });
+        }
 
-        Enemy[] enemiesInScene = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        var enemiesInScene = UnityEngine.Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+        var enemyDataList = new EnemySaveDataList { enemies = new List<EnemySaveData>() };
         foreach (var enemy in enemiesInScene)
         {
-            data.enemies.Add(new EnemySaveData
+            enemyDataList.enemies.Add(new EnemySaveData
             {
                 id = enemy.UniqueId,
                 posX = enemy.transform.position.x,
@@ -37,39 +41,44 @@ public class SaveInteractor : ISaveInteractor
                 hp = enemy.HP
             });
         }
-
-        _repository.Save(data);
+        _enemyRepository.Save(enemyDataList);
     }
 
     public void LoadGame()
     {
-        SaveData data = _repository.Load();
-        if (data == null) return;
-
-        // Восстанавливаем игрока
-        _player.transform.position = new Vector3(data.playerPosX, data.playerPosY, data.playerPosZ);
-        _player._rb.linearVelocity = Vector3.zero;
-        _player.SetHealth(data.playerHealth);
-
-        // Восстанавливаем врагов
-        Enemy[] enemiesInScene = Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
-        foreach (var enemy in enemiesInScene)
+        var playerData = _playerRepository.Load();
+        if (playerData != null)
         {
-            var savedEnemy = data.enemies.Find(e => e.id == enemy.UniqueId);
-            if (savedEnemy != null)
+            var player = UnityEngine.Object.FindAnyObjectByType<PlayerView>();
+            if (player != null)
             {
-                // Телепортируем (для NavMeshAgent нужен Warp)
-                if (enemy.Agent != null)
-                    enemy.Agent.Warp(new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ));
-                else
-                    enemy.transform.position = new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ);
-
-                enemy.SetHealth(savedEnemy.hp);
+                player.transform.position = new Vector3(playerData.posX, playerData.posY, playerData.posZ);
+                player.Rb.linearVelocity = Vector3.zero;
+                if (player.Model != null)
+                    player.Model.Health = playerData.health;
             }
-            else
+        }
+
+        var enemyDataList = _enemyRepository.Load();
+        if (enemyDataList != null && enemyDataList.enemies != null)
+        {
+            var enemiesInScene = UnityEngine.Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+            foreach (var enemy in enemiesInScene)
             {
-                // Если врага нет в сохранении (он был убит до сохранения), уничтожаем его
-                Object.Destroy(enemy.gameObject);
+                var savedEnemy = enemyDataList.enemies.Find(e => e.id == enemy.UniqueId);
+                if (savedEnemy != null)
+                {
+                    if (enemy.Agent != null)
+                        enemy.Agent.Warp(new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ));
+                    else
+                        enemy.transform.position = new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ);
+
+                    enemy.SetHealth(savedEnemy.hp);
+                }
+                else
+                {
+                    UnityEngine.Object.Destroy(enemy.gameObject);
+                }
             }
         }
     }

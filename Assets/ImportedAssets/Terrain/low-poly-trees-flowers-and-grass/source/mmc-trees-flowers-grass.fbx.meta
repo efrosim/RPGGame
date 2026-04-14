@@ -3,7 +3,107 @@ guid: 1f042f5b8b063464ca56cc76fbd1c034
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: daffodil-flower-white
+    second: {fileID: 2100000, guid: 9c69b30929bdf494e986b41710529695, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: daffodil-flower-yellow
+    second: {fileID: 2100000, guid: 2be8827a6b969124b96915f4255cb516, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: daffodil-stem-01-diffuse
+    second: {fileID: 2100000, guid: ad6b8cc3fb434c84abca8ac226e06f44, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: daffodil-stem-02-diffuse
+    second: {fileID: 2100000, guid: 866ce24daece8cf438bf0d497c373d97, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: daisy-flower-diffuse
+    second: {fileID: 2100000, guid: 448be92f3ba8c6d46b45e1e647822076, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: daisy-stem-diffuse
+    second: {fileID: 2100000, guid: d9f7c02f34fb799429d0c448d182a6a2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: daisy-stem-diffuse-02
+    second: {fileID: 2100000, guid: fb419393ea5f745498195172b4d42d0b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: grass-01
+    second: {fileID: 2100000, guid: 7cf01178e0c691e4394230ac8932ac5d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: grass-stylized-02
+    second: {fileID: 2100000, guid: 28108ba906ae3f04985ea2231086da11, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plant-ground-brown-02
+    second: {fileID: 2100000, guid: 7be56df6b0237f74ab252cc1daa0f6f3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plant-ground-green-01
+    second: {fileID: 2100000, guid: 33c3f96cc27c2b944adbf39e15474c98, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-04
+    second: {fileID: 2100000, guid: 9a710764968b4ce45a77d6b1c07ba10f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-bark-02
+    second: {fileID: 2100000, guid: ef03bdb603065f649bb8bf5d164bbd96, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-bark-03
+    second: {fileID: 2100000, guid: ca3ce2a998afe1b4cac58ab834d40517, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-branch-stylized-diffuse
+    second: {fileID: 2100000, guid: c87a0c830791c614f82cc6b3a9cc3d7d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-branches-autumn-mix-diffuse
+    second: {fileID: 2100000, guid: 343d6e6f21cb63a4f968a61e80c93935, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-branches-autumn-yellow-mix-diffuse
+    second: {fileID: 2100000, guid: 32397d26d655635499d3b0393b8f9ab2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-branches-dry-diffuse
+    second: {fileID: 2100000, guid: ab97fcd050c09ba4c845faa267d7ca1c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-branches-mix-diffuse
+    second: {fileID: 2100000, guid: 1d6ab1915bfb9bc43ba4a04568222cf3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tree-wood
+    second: {fileID: 2100000, guid: b58599a3861cdaf45ae23daf8f0a65b1, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

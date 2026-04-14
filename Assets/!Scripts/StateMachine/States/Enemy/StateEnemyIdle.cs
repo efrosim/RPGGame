@@ -17,15 +17,28 @@ public class StateEnemyIdle : State<Enemy>
     public override void LogicUpdate()
     {
         _scanTimer += Time.deltaTime;
-        if (_scanTimer >= 0.2f) 
+        
+        // In peaceful mode, enemies don't actively scan for targets unless provoked
+        if (!GameController.IsPeacefulMode || _character.Target != null)
         {
-            _scanTimer = 0f;
-            _character.Target = _character.Scanner.Scan();
-        }
+            if (_scanTimer >= 0.2f) 
+            {
+                _scanTimer = 0f;
+                _character.Target = _character.Scanner.Scan();
+            }
 
-        if (_character.Target != null)
-        {
-            _character.ChangeState<StateEnemyChase>();
+            if (_character.Target != null)
+            {
+                _character.ChangeState<StateEnemyChase>();
+            }
         }
+    }
+    
+    public override void OnHit(int dmg, DamageType type)
+    {
+        if (_character.HP <= _character.MaxHP * 0.3f && !(_character is Boss))
+            _character.ChangeState<StateEnemyFlee>();
+        else
+            _character.ChangeState<StateEnemyHit>();
     }
 }

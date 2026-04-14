@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class MeleeWeapon : MonoBehaviour, IWeapon
 {
@@ -17,9 +17,9 @@ public class MeleeWeapon : MonoBehaviour, IWeapon
         _owner = GetComponentInParent<IHittable>();
     }
 
-    public void Use() => DealDamage();
+    public virtual void Use() => DealDamage();
 
-    public void DealDamage()
+    public virtual void DealDamage()
     {
         Vector3 hitCenter = transform.position + transform.forward * _hitOffset + Vector3.up;
         int count = Physics.OverlapBoxNonAlloc(hitCenter, _hitCube / 2, _hitColliders, transform.rotation);

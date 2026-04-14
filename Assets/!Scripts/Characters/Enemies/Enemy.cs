@@ -6,9 +6,7 @@ using UnityEngine.AI;
 [RequireComponent(typeof(TargetScanner))]
 public abstract class Enemy : Character
 {
-    public string UniqueId { get; private set; }
-
-    [Header("Combat Settings")]
+    public string UniqueId { get; private set; }[Header("Combat Settings")]
     public float _attackRange;
     public float _idleRange;
 
@@ -49,6 +47,9 @@ public abstract class Enemy : Character
     }
 
     public abstract void TransitionToAttackState();
+    
+    // Метод для инъекции оружия через Фабрику
+    public virtual void InitWeapon(IWeapon weapon) { }
 
     protected virtual void Update() => _SM.LogicUpdate();
     protected virtual void FixedUpdate() => _SM.PhysicsUpdate();
@@ -57,9 +58,17 @@ public abstract class Enemy : Character
     protected override void OnHitReceived(int dmg, DamageType type)
     {
         if (HP <= 0) 
+        {
             ChangeState<StateEnemyDead>();
+            var entryPoint = UnityEngine.Object.FindAnyObjectByType<GameplayEntryPoint>(); 
+            entryPoint?.RegisterEnemyKill();
+        }
         else 
-            ChangeState<StateEnemyHit>(); 
+        {
+            // Теперь мы не форсируем ChangeState<StateEnemyHit>(), 
+            // а передаем решение текущему состоянию!
+            _SM.OnHit(dmg, type); 
+        }
     }
 
     private void HandleDeath()

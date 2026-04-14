@@ -3,6 +3,7 @@
     void Enter();
     void Exit();
     void LogicUpdate();
+    void OnHit(int dmg, DamageType type); 
 }
 
 public interface IPhysicsState
