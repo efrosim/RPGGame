@@ -9,6 +9,11 @@ public enum BossElement
 
 public class Boss : Enemy
 {
+    [Header("Weapons")][SerializeField] private MeleeWeapon _meleeWeapon;
+    [SerializeField] private RangeWeapon _rangeWeapon;
+
+    // Свойство, которое возвращает нужное оружие в зависимости от текущей стихии
+    public IWeapon CurrentWeapon => IsMeleeWeapon ? (IWeapon)_meleeWeapon : (IWeapon)_rangeWeapon;
     public BossElement Element { get; private set; }
     public bool IsMeleeWeapon { get; private set; }
     public IBossAttackEffectStrategy AttackEffect { get; private set; }

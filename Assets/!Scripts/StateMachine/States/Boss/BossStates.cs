@@ -59,34 +59,70 @@ public class StateBossChase : State<Boss>, IPhysicsState
 public class StateBossAttack : State<Boss>, IAnimationState
 {
     private static readonly int AttackHash = Animator.StringToHash("Attack");
+    private float _safetyTimer;
+
     public StateBossAttack(Boss character, StateMachine sm) : base(character, sm) { }
     
     public override void Enter() { 
         _character.Agent.isStopped = true; 
         _character._animator?.CrossFadeInFixedTime(AttackHash, 0.1f);
         _character.PlayAttackEffect();
+        _safetyTimer = 2.0f; 
+    }
+
+    public override void LogicUpdate()
+    {
+        _safetyTimer -= Time.deltaTime;
+        if (_safetyTimer <= 0f) _character.ChangeState<StateBossChase>();
     }
 
     public void OnAnimationEvent(AnimationEventType eventType)
     {
-        if (eventType == AnimationEventType.AttackEnd) _character.ChangeState<StateBossChase>();
+        // Наносим урон!
+        if (eventType == AnimationEventType.DealDamage)
+        {
+            _character.CurrentWeapon?.Use();
+        }
+        // Заканчиваем атаку
+        else if (eventType == AnimationEventType.AttackEnd) 
+        {
+            _character.ChangeState<StateBossChase>();
+        }
     }
 }
 
 public class StateBossHeavyAttack : State<Boss>, IAnimationState
 {
     private static readonly int HeavyAttackHash = Animator.StringToHash("HeavyAttack");
+    private float _safetyTimer;
+
     public StateBossHeavyAttack(Boss character, StateMachine sm) : base(character, sm) { }
     
     public override void Enter() { 
         _character.Agent.isStopped = true; 
         _character._animator?.CrossFadeInFixedTime(HeavyAttackHash, 0.1f);
         _character.PlayAttackEffect();
+        _safetyTimer = 3.0f; 
+    }
+
+    public override void LogicUpdate()
+    {
+        _safetyTimer -= Time.deltaTime;
+        if (_safetyTimer <= 0f) _character.ChangeState<StateBossChase>();
     }
 
     public void OnAnimationEvent(AnimationEventType eventType)
     {
-        if (eventType == AnimationEventType.AttackEnd) _character.ChangeState<StateBossChase>();
+        if (eventType == AnimationEventType.DealDamage)
+        {
+            // При тяжелой атаке можно вызвать Use() дважды, чтобы нанести двойной урон
+            _character.CurrentWeapon?.Use();
+            _character.CurrentWeapon?.Use(); 
+        }
+        else if (eventType == AnimationEventType.AttackEnd) 
+        {
+            _character.ChangeState<StateBossChase>();
+        }
     }
 }
 
