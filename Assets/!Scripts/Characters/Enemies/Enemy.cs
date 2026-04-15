@@ -47,7 +47,11 @@ public abstract class Enemy : Character
     }
 
     public abstract void TransitionToAttackState();
-    
+
+    public virtual void TransitionToChaseState() => ChangeState<StateEnemyChase>();
+
+    public virtual void TransitionToIdleState() => ChangeState<StateEnemyIdle>();
+
     // Метод для инъекции оружия через Фабрику
     public virtual void InitWeapon(IWeapon weapon) { }
 

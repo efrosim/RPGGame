@@ -13,11 +13,17 @@
         _sceneLoader = sceneLoader;
         _gameplaySceneIndex = gameplaySceneIndex;
         
-        _model = new MainMenuModel { CurrentVolume = _audioService.GetVolume() };
+        _model = new MainMenuModel { 
+            CurrentVolume = _audioService.GetVolume(),
+            IsPeacefulMode = GameController.IsPeacefulMode,
+        };
+
         _view.SetVolumeSlider(_model.CurrentVolume);
+        _view.SetPeacefulModeToggle(_model.IsPeacefulMode);
 
         _view.OnPlayClicked += HandlePlay;
         _view.OnVolumeChanged += HandleVolumeChange;
+        _view.OnPeacefulModeChange += HandlePeacefulModeChange;
     }
 
     private void HandlePlay() => _sceneLoader.LoadScene(_gameplaySceneIndex);
@@ -26,5 +32,11 @@
     {
         _model.CurrentVolume = volume;
         _audioService.SetVolume(volume);
+    }
+
+    private void HandlePeacefulModeChange(bool isPeaceful)
+    {
+        _model.IsPeacefulMode = isPeaceful;
+        GameController.IsPeacefulMode = isPeaceful;
     }
 }

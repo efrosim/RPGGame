@@ -11,10 +11,10 @@ public abstract class StatePlayerAttack : State<PlayerView>, IAnimationState
     {
         _character.Rb.linearVelocity = Vector3.zero;
         _character._animator.CrossFadeInFixedTime(AttackHash, CrossFadeDuration);
-        _character.OnAnimation += (eventType) => OnAnimationEvent(eventType);
+        _character.OnAnimation += OnAnimationEvent;
     }
 
-    public override void Exit() { _character.OnAnimation -= (eventType) => OnAnimationEvent(eventType); }
+    public override void Exit() { _character.OnAnimation -= OnAnimationEvent; }
 
     public virtual void OnAnimationEvent(AnimationEventType eventType)
     {

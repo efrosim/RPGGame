@@ -12,7 +12,7 @@ public class GameController
     
     private bool _isGameOver = false;
 
-    public static bool IsPeacefulMode = false;
+    public static bool IsPeacefulMode = true;
     public int EnemyKillCount { get; private set; }
 
     public event System.Action OnBossSpawnRequested;

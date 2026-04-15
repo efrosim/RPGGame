@@ -32,12 +32,12 @@ public class StateEnemyHit : State<Enemy>
             if (GameController.IsPeacefulMode && !(_character is Boss))
             {
                 // Обычный моб в мирном режиме не агрится
-                _character.ChangeState<StateEnemyIdle>();
+                _character.TransitionToIdleState();
             }
             else
             {
                 // Агрессивный режим или это Босс (он агрится после первого удара)
-                _character.ChangeState<StateEnemyChase>();
+                _character.TransitionToChaseState();
             }
         }
     }

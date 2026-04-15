@@ -350,8 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 899efd0576c60244f8ef3c179a5204c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyRange
-  _HP: 10
-  _MaxHP: 10
+  _MaxHP: 100
   _animator: {fileID: 2716944327407380568}
   _attackRange: 10
   _idleRange: 15

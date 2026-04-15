@@ -62,13 +62,12 @@ public class Boss : Enemy
 
         int idx = UnityEngine.Random.Range(0, _availableElements.Count);
         Element = _availableElements[idx];
-        _availableElements.RemoveAt(idx); // Убираем использованную стихию
+        _availableElements.RemoveAt(idx); 
 
         IsMeleeWeapon = UnityEngine.Random.value > 0.5f;
         AttackEffect = BossEffectFactory.GetEffect(Element, IsMeleeWeapon);
         ApplyElementVisuals();
 
-        // Чисто визуальный эффект смены стихии
         Debug.Log($"✨ [Boss] Смена стихии на {Element}! (Здесь срабатывают партиклы)");
     }
 
@@ -100,6 +99,10 @@ public class Boss : Enemy
         else
             ChangeState<StateBossAttack>();
     }
+
+    public override void TransitionToChaseState() => ChangeState<StateBossChase>();
+
+    public override void TransitionToIdleState() => ChangeState<StateBossIdle>();
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {

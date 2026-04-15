@@ -12,9 +12,11 @@ public class MainMenuView : MonoBehaviour
 
     [Header("Settings")]
     public Slider _volumeSlider;
+    public Toggle _peacefulModeToggle;
 
     public event Action OnPlayClicked;
     public event Action<float> OnVolumeChanged;
+    public event Action<bool> OnPeacefulModeChange;
 
     private void Awake()
     {
@@ -22,6 +24,8 @@ public class MainMenuView : MonoBehaviour
         _settingsButton.onClick.AddListener(() => ShowSettings(true));
         _closeSettingsButton.onClick.AddListener(() => ShowSettings(false));
         _volumeSlider.onValueChanged.AddListener(val => OnVolumeChanged?.Invoke(val));
+
+        if (_peacefulModeToggle != null) _peacefulModeToggle.onValueChanged.AddListener(val => OnPeacefulModeChange?.Invoke(val));
     }
 
     public void ShowSettings(bool show)
@@ -33,5 +37,10 @@ public class MainMenuView : MonoBehaviour
     public void SetVolumeSlider(float value)
     {
         _volumeSlider.value = value;
+    }
+
+    public void SetPeacefulModeToggle(bool value)
+    {
+        if(_peacefulModeToggle != null) _peacefulModeToggle.isOn = value;
     }
 }
