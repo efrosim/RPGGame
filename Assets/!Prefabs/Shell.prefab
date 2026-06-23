@@ -105,8 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fc07b5355ca3f141b1db5fbd0e3ee68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shell
-  _speed: 5
-  _ownedBy: {fileID: 0}
+  _speed: 10
 --- !u!135 &3314320918885075129
 SphereCollider:
   m_ObjectHideFlags: 0

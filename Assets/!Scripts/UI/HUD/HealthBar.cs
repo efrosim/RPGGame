@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour
@@ -9,15 +9,42 @@ public class HealthBar : MonoBehaviour
     
     private IHealth _healthSource;
     private Camera _mainCamera; 
+    private Canvas _parentCanvas;
 
     private void Awake()
     {
         _mainCamera = Camera.main;
+        _parentCanvas = GetComponentInParent<Canvas>();
         
         if (_healthSourceObj != null)
+        {
             _healthSource = _healthSourceObj.GetComponent<IHealth>();
-        else
-            _healthSource = GetComponentInParent<IHealth>();
+        }
+
+        if (_healthSource == null)
+        {
+            _healthSource = FindHealthSourceInParents();
+        }
+
+        if (_healthSource == null)
+        {
+            Debug.LogWarning($"[HealthBar] Could not find any component implementing IHealth in parent hierarchy of '{gameObject.name}'", this);
+        }
+    }
+
+    private IHealth FindHealthSourceInParents()
+    {
+        Transform current = transform;
+        while (current != null)
+        {
+            var health = current.GetComponent<IHealth>();
+            if (health != null)
+            {
+                return health;
+            }
+            current = current.parent;
+        }
+        return null;
     }
 
     private void OnEnable()
@@ -40,6 +67,10 @@ public class HealthBar : MonoBehaviour
         {
             UpdateHealthBar(_healthSource.GetHealthNormalized());
         }
+        else
+        {
+            UpdateHealthBar(0f); // Default to empty if no source found
+        }
     }
 
     private void UpdateHealthBar(float normalizedHealth)
@@ -52,9 +83,18 @@ public class HealthBar : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (_mainCamera == null)
+        {
+            _mainCamera = Camera.main;
+        }
+
         if (_mainCamera != null)
         {
-            transform.LookAt(transform.position + _mainCamera.transform.forward);
+            if (_parentCanvas != null && _parentCanvas.renderMode != RenderMode.WorldSpace)
+            {
+                return;
+            }
+            transform.rotation = _mainCamera.transform.rotation;
         }
     }
 }

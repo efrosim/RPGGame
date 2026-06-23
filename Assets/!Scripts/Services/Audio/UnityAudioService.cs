@@ -13,13 +13,20 @@ public class UnityAudioService : IAudioService
 
     public float GetVolume() => PlayerPrefs.GetFloat(VolumeKey, 1f);
 
-    public void PlayMusic(AudioClip clip)
+    private AudioSource _currentMusicSource;
+
+    public void PlayMusic(AudioClip clip, bool loop = true)
     {
+        if (_currentMusicSource != null && _currentMusicSource.gameObject != null)
+        {
+            Object.Destroy(_currentMusicSource.gameObject);
+        }
+
         var go = new GameObject("GlobalMusic");
-        var source = go.AddComponent<AudioSource>();
-        source.clip = clip;
-        source.loop = true;
-        source.Play();
+        _currentMusicSource = go.AddComponent<AudioSource>();
+        _currentMusicSource.clip = clip;
+        _currentMusicSource.loop = loop;
+        _currentMusicSource.Play();
         Object.DontDestroyOnLoad(go);
     }
 }

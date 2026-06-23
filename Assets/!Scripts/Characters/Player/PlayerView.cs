@@ -39,11 +39,13 @@ public class PlayerView : MonoBehaviour, IGameOverTrigger, IHittable, IHealth, I
         Model = model;
         Model.OnHealthChanged += (hp) => OnHealthChanged?.Invoke((float)hp / Model.MaxHealth);
         Model.OnDead += () => OnDeadEvent?.Invoke();
+        OnHealthChanged?.Invoke((float)Model.Health / Model.MaxHealth);
     }
 
     private void Awake()
     {
         Rb = GetComponent<Rigidbody>();
+        Rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
         if (_meleeWeaponObj != null) MeleeWeapon = _meleeWeaponObj.GetComponent<IWeapon>();
         if (_rangeWeaponObj != null) RangeWeapon = _rangeWeaponObj.GetComponent<IWeapon>();
     }

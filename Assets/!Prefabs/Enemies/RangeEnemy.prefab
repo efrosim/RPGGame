@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBar
   _fillImage: {fileID: 4923520673731263939}
-  _healthSourceObj: {fileID: 0}
+  _healthSourceObj: {fileID: 7701422143411369477}
 --- !u!1 &5349471720424126885
 GameObject:
   m_ObjectHideFlags: 0

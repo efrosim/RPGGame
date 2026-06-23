@@ -60,7 +60,7 @@ public class GameController
         _isGameOver = true;
 
         if (_victoryMusic != null)
-            _audioService.PlayMusic(_victoryMusic);
+            _audioService.PlayMusic(_victoryMusic, false);
 
         // Transition back to main menu after some time
         _ = WinSequenceAsync();
