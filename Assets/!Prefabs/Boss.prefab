@@ -284,8 +284,8 @@ MonoBehaviour:
   _animator: {fileID: 1281478676563712800}
   _attackRange: 0
   _idleRange: 0
-  _meleeWeapon: {fileID: 0}
-  _rangeWeapon: {fileID: 0}
+  _meleeWeapon: {fileID: 8162436775368244672, guid: 07442677c61d9f9488ae50e38f176945, type: 3}
+  _rangeWeapon: {fileID: 7299473631466121271, guid: a5babcb244c333a4c8f139b5ecb7191f, type: 3}
   _fireMat: {fileID: 0}
   _iceMat: {fileID: 0}
   _earthMat: {fileID: 0}
