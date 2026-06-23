@@ -22,11 +22,21 @@
         _view.SetPeacefulModeToggle(_model.IsPeacefulMode);
 
         _view.OnPlayClicked += HandlePlay;
+        _view.OnExitClicked += HandleExit;
         _view.OnVolumeChanged += HandleVolumeChange;
         _view.OnPeacefulModeChange += HandlePeacefulModeChange;
     }
 
     private void HandlePlay() => _sceneLoader.LoadScene(_gameplaySceneIndex);
+    
+    private void HandleExit()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        UnityEngine.Application.Quit();
+#endif
+    }
 
     private void HandleVolumeChange(float volume)
     {

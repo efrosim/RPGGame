@@ -3,18 +3,23 @@ using UnityEngine.UI;
 using System;
 
 public class MainMenuView : MonoBehaviour
-{[Header("Panels")]
+{
+    [Header("Panels")]
     public GameObject _mainPanel;
-    public GameObject _settingsPanel;[Header("Buttons")]
+    public GameObject _settingsPanel;
+
+    [Header("Buttons")]
     public Button _playButton;
     public Button _settingsButton;
     public Button _closeSettingsButton;
+    public Button _exitButton;
 
     [Header("Settings")]
     public Slider _volumeSlider;
     public Toggle _peacefulModeToggle;
 
     public event Action OnPlayClicked;
+    public event Action OnExitClicked;
     public event Action<float> OnVolumeChanged;
     public event Action<bool> OnPeacefulModeChange;
 
@@ -23,6 +28,9 @@ public class MainMenuView : MonoBehaviour
         _playButton.onClick.AddListener(() => OnPlayClicked?.Invoke());
         _settingsButton.onClick.AddListener(() => ShowSettings(true));
         _closeSettingsButton.onClick.AddListener(() => ShowSettings(false));
+        
+        if (_exitButton != null) _exitButton.onClick.AddListener(() => OnExitClicked?.Invoke()); 
+
         _volumeSlider.onValueChanged.AddListener(val => OnVolumeChanged?.Invoke(val));
 
         if (_peacefulModeToggle != null) _peacefulModeToggle.onValueChanged.AddListener(val => OnPeacefulModeChange?.Invoke(val));
