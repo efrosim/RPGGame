@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class StateEnemyFlee : State<Enemy>, IPhysicsState
 {
-    private static readonly int FleeHash = Animator.StringToHash("Run"); // assuming Run animation exists, or use Chase
+    private static readonly int FleeHash = Animator.StringToHash("Chase"); // assuming Run animation exists, or use Chase
     private const float CrossFadeDuration = 0.1f;
     private float _fleeTimer;
 

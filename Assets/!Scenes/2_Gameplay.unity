@@ -44551,7 +44551,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealthBar
   _fillImage: {fileID: 1758729278}
-  _healthSourceObj: {fileID: 0}
+  _healthSourceObj: {fileID: 967036771}
 --- !u!1 &730498508
 GameObject:
   m_ObjectHideFlags: 0
@@ -127166,11 +127166,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6151374548723599784, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.189
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 6151374548723599784, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6436450504329944308, guid: 116996828e182344e8e9a7c6c65b48c2, type: 3}
       propertyPath: m_Name
