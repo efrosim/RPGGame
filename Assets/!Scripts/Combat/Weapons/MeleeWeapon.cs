@@ -58,7 +58,7 @@ public class MeleeWeapon : MonoBehaviour, IWeapon
 
     private void ApplyElementalStatus(IHittable target)
     {
-        if (target is PlayerView player)
+        if (target is IStatusEffectReceiver player)
         {
             switch (_element)
             {
@@ -66,10 +66,10 @@ public class MeleeWeapon : MonoBehaviour, IWeapon
                     player.ApplySlow(0.5f, 3f);
                     break;
                 case BossElement.Fire:
-                    player.ApplyBurn(2, 3);
+                    player.ApplyBurn(2, 3f);
                     break;
                 case BossElement.Earth:
-                    player.GetHit(_dmg, DamageType.Melee);
+                    target.GetHit(_dmg, DamageType.Melee);
                     break;
                 case BossElement.Aether:
                     if (_owner is Character boss)

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerView : MonoBehaviour, IGameOverTrigger, IHittable, IHealth, ITargetable
+public class PlayerView : MonoBehaviour, IGameOverTrigger, IHittable, IHealth, ITargetable, IStatusEffectReceiver
 {
     [Header("Stats")]
     public int _MaxHP;
@@ -114,34 +114,18 @@ public class PlayerView : MonoBehaviour, IGameOverTrigger, IHittable, IHealth, I
     public event Action OnDeadEvent;
 
     // Elemental status effects
-    public float SpeedModifier { get; private set; } = 1.0f;
+    public float SpeedModifier => Model?.SpeedModifier ?? 1.0f;
+
+    public event Action<float, float> OnSlowApplied;
+    public event Action<int, float> OnBurnApplied;
 
     public void ApplySlow(float modifier, float duration)
     {
-        StartCoroutine(SlowCoroutine(modifier, duration));
+        OnSlowApplied?.Invoke(modifier, duration);
     }
 
-    private System.Collections.IEnumerator SlowCoroutine(float modifier, float duration)
+    public void ApplyBurn(int damagePerSecond, float duration)
     {
-        SpeedModifier = modifier;
-        yield return new WaitForSeconds(duration);
-        SpeedModifier = 1.0f;
-    }
-
-    public void ApplyBurn(int damagePerSecond, int duration)
-    {
-        StartCoroutine(BurnCoroutine(damagePerSecond, duration));
-    }
-
-    private System.Collections.IEnumerator BurnCoroutine(int damagePerSecond, int duration)
-    {
-        for (int i = 0; i < duration; i++)
-        {
-            yield return new WaitForSeconds(1.0f);
-            if (HP > 0)
-            {
-                GetHit(damagePerSecond, DamageType.Range);
-            }
-        }
+        OnBurnApplied?.Invoke(damagePerSecond, duration);
     }
 }

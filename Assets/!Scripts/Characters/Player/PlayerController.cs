@@ -19,6 +19,8 @@ public class PlayerController : IDisposable
         _view.OnPrimeAttackEvent += HandlePrimeAttack;
         _view.OnSecondAttackEvent += HandleSecondAttack;
         _view.OnHitEvent += HandleHit;
+        _view.OnSlowApplied += HandleSlowApplied;
+        _view.OnBurnApplied += HandleBurnApplied;
 
         _model.OnDead += HandleDeath;
     }
@@ -64,11 +66,22 @@ public class PlayerController : IDisposable
     {
         _sm.LogicUpdate();
         _model.MagicCooldown.Tick(Time.deltaTime);
+        _model.UpdateEffects(Time.deltaTime);
     }
 
     public void PhysicsUpdate()
     {
         _sm.PhysicsUpdate();
+    }
+
+    private void HandleSlowApplied(float modifier, float duration)
+    {
+        _model.ApplyEffect(new SlowEffect(modifier, duration));
+    }
+
+    private void HandleBurnApplied(int damagePerSecond, float duration)
+    {
+        _model.ApplyEffect(new BurnEffect(damagePerSecond, duration));
     }
 
     public void Dispose()
@@ -77,6 +90,8 @@ public class PlayerController : IDisposable
         _view.OnPrimeAttackEvent -= HandlePrimeAttack;
         _view.OnSecondAttackEvent -= HandleSecondAttack;
         _view.OnHitEvent -= HandleHit;
+        _view.OnSlowApplied -= HandleSlowApplied;
+        _view.OnBurnApplied -= HandleBurnApplied;
         _model.OnDead -= HandleDeath;
     }
     
