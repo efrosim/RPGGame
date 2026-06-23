@@ -83,13 +83,40 @@ public class Boss : Enemy
 
     private void ApplyElementVisuals()
     {
-        if (_renderer == null) return;
-        switch (Element)
+        var renderers = GetComponentsInChildren<Renderer>();
+        if (renderers == null || renderers.Length == 0) return;
+
+        foreach (var r in renderers)
         {
-            case BossElement.Fire: _renderer.material = _fireMat; break;
-            case BossElement.Ice: _renderer.material = _iceMat; break;
-            case BossElement.Earth: _renderer.material = _earthMat; break;
-            case BossElement.Aether: _renderer.material = _aetherMat; break;
+            // Propagate only to the boss's body parts (skip weapons which manage their own visuals)
+            if (r.GetComponentInParent<MeleeWeapon>() != null || r.GetComponentInParent<RangeWeapon>() != null)
+                continue;
+
+            Color targetColor = Color.white;
+            switch (Element)
+            {
+                case BossElement.Fire:
+                    if (_fireMat != null) { r.material = _fireMat; continue; }
+                    targetColor = Color.red;
+                    break;
+                case BossElement.Ice:
+                    if (_iceMat != null) { r.material = _iceMat; continue; }
+                    targetColor = Color.cyan;
+                    break;
+                case BossElement.Earth:
+                    if (_earthMat != null) { r.material = _earthMat; continue; }
+                    targetColor = new Color(0.4f, 0.2f, 0f); // Brown
+                    break;
+                case BossElement.Aether:
+                    if (_aetherMat != null) { r.material = _aetherMat; continue; }
+                    targetColor = Color.magenta;
+                    break;
+            }
+
+            if (r.material != null)
+            {
+                r.material.color = targetColor;
+            }
         }
     }
 
