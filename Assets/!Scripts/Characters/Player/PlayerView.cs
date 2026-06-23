@@ -110,4 +110,36 @@ public class PlayerView : MonoBehaviour, IGameOverTrigger, IHittable, IHealth, I
 
     // IGameOverTrigger
     public event Action OnDeadEvent;
+
+    // Elemental status effects
+    public float SpeedModifier { get; private set; } = 1.0f;
+
+    public void ApplySlow(float modifier, float duration)
+    {
+        StartCoroutine(SlowCoroutine(modifier, duration));
+    }
+
+    private System.Collections.IEnumerator SlowCoroutine(float modifier, float duration)
+    {
+        SpeedModifier = modifier;
+        yield return new WaitForSeconds(duration);
+        SpeedModifier = 1.0f;
+    }
+
+    public void ApplyBurn(int damagePerSecond, int duration)
+    {
+        StartCoroutine(BurnCoroutine(damagePerSecond, duration));
+    }
+
+    private System.Collections.IEnumerator BurnCoroutine(int damagePerSecond, int duration)
+    {
+        for (int i = 0; i < duration; i++)
+        {
+            yield return new WaitForSeconds(1.0f);
+            if (HP > 0)
+            {
+                GetHit(damagePerSecond, DamageType.Range);
+            }
+        }
+    }
 }

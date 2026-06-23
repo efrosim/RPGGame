@@ -31,6 +31,12 @@ public class Boss : Enemy
     public float LastShieldTime { get; set; }
     public float LastSummonTime { get; set; }
 
+    [Header("Summoning")]
+    [SerializeField] private Enemy[] _minionPrefabs;
+    [SerializeField] private float _summonRadius = 4f;
+
+    public float AttackSpeedMultiplier => HP < MaxHP * 0.5f ? 1.5f : 1.0f;
+
     private List<BossElement> _availableElements;
     private float _nextElementThreshold = 0.75f; // 75%, 50%, 25%
 
@@ -68,6 +74,9 @@ public class Boss : Enemy
         AttackEffect = BossEffectFactory.GetEffect(Element, IsMeleeWeapon);
         ApplyElementVisuals();
 
+        if (_meleeWeapon != null) _meleeWeapon.SetElement(Element);
+        if (_rangeWeapon != null) _rangeWeapon.SetElement(Element);
+
         Debug.Log($"✨ [Boss] Смена стихии на {Element}! (Здесь срабатывают партиклы)");
     }
 
@@ -103,6 +112,49 @@ public class Boss : Enemy
     public override void TransitionToChaseState() => ChangeState<StateBossChase>();
 
     public override void TransitionToIdleState() => ChangeState<StateBossIdle>();
+
+    public override void GetHit(int dmg, DamageType type)
+    {
+        if (_SM._curState is StateBossShield)
+        {
+            Debug.Log("🛡️ [Boss] Удар полностью заблокирован щитом!");
+            return;
+        }
+        base.GetHit(dmg, type);
+    }
+
+    public void SummonMinions()
+    {
+        if (_minionPrefabs == null || _minionPrefabs.Length == 0) return;
+
+        IWeaponFactory weaponFactory = null;
+        var scope = UnityEngine.Object.FindAnyObjectByType<VContainer.Unity.LifetimeScope>();
+        if (scope != null && scope.Container != null)
+        {
+            weaponFactory = scope.Container.Resolve<IWeaponFactory>();
+        }
+
+        int count = 2;
+        for (int i = 0; i < count; i++)
+        {
+            Enemy prefab = _minionPrefabs[UnityEngine.Random.Range(0, _minionPrefabs.Length)];
+            Vector3 randomDir = UnityEngine.Random.insideUnitSphere * _summonRadius;
+            randomDir.y = 0;
+            Vector3 spawnPos = transform.position + randomDir;
+
+            if (UnityEngine.AI.NavMesh.SamplePosition(spawnPos, out var hit, _summonRadius, UnityEngine.AI.NavMesh.AllAreas))
+            {
+                Enemy spawned = Instantiate(prefab, hit.position, Quaternion.identity);
+                spawned.SetDynamicId($"{spawned.gameObject.name}_{System.Guid.NewGuid().ToString().Substring(0, 8)}");
+
+                if (weaponFactory != null)
+                {
+                    IWeapon weapon = weaponFactory.EquipRandomWeapon(spawned);
+                    spawned.InitWeapon(weapon);
+                }
+            }
+        }
+    }
 
     protected override void OnHitReceived(int dmg, DamageType type)
     {

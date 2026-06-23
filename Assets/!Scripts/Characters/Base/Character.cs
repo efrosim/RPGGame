@@ -34,7 +34,7 @@ public abstract class Character : MonoBehaviour, IHittable, IHealth, ITargetable
         OnHealthChanged?.Invoke(GetHealthNormalized()); 
     }
 
-    public void GetHit(int dmg, DamageType type)
+    public virtual void GetHit(int dmg, DamageType type)
     {
         if (HP <= 0) return; 
 

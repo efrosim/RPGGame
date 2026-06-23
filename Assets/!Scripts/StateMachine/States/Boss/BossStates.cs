@@ -65,9 +65,11 @@ public class StateBossAttack : State<Boss>, IAnimationState
     
     public override void Enter() { 
         _character.Agent.isStopped = true; 
+        float speed = _character.AttackSpeedMultiplier;
+        if (_character._animator != null) _character._animator.speed = speed;
         _character._animator?.CrossFadeInFixedTime(AttackHash, 0.1f);
         _character.PlayAttackEffect();
-        _safetyTimer = 2.0f; 
+        _safetyTimer = 2.0f / speed; 
     }
 
     public override void LogicUpdate()
@@ -89,6 +91,11 @@ public class StateBossAttack : State<Boss>, IAnimationState
             _character.ChangeState<StateBossChase>();
         }
     }
+
+    public override void Exit()
+    {
+        if (_character._animator != null) _character._animator.speed = 1.0f;
+    }
 }
 
 public class StateBossHeavyAttack : State<Boss>, IAnimationState
@@ -100,9 +107,11 @@ public class StateBossHeavyAttack : State<Boss>, IAnimationState
     
     public override void Enter() { 
         _character.Agent.isStopped = true; 
+        float speed = _character.AttackSpeedMultiplier;
+        if (_character._animator != null) _character._animator.speed = speed;
         _character._animator?.CrossFadeInFixedTime(HeavyAttackHash, 0.1f);
         _character.PlayAttackEffect();
-        _safetyTimer = 3.0f; 
+        _safetyTimer = 3.0f / speed; 
     }
 
     public override void LogicUpdate()
@@ -123,6 +132,11 @@ public class StateBossHeavyAttack : State<Boss>, IAnimationState
         {
             _character.ChangeState<StateBossChase>();
         }
+    }
+
+    public override void Exit()
+    {
+        if (_character._animator != null) _character._animator.speed = 1.0f;
     }
 }
 
@@ -179,6 +193,7 @@ public class StateBossSummon : State<Boss>
         _character.Agent.isStopped = true; 
         _character.LastSummonTime = Time.time;
         _character._animator?.CrossFadeInFixedTime(SummonHash, 0.1f);
+        _character.SummonMinions();
         _timer = 1.5f;
     }
     public override void LogicUpdate() {

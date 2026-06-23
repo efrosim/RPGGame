@@ -24,7 +24,7 @@ public class StatePlayerMove : State<PlayerView>, IPhysicsState
         Vector3 dir = _character.transform.forward * input.y + _character.transform.right * input.x;
         if (dir.magnitude > 1f) dir.Normalize();
 
-        Vector3 targetVelocity = dir * (5f * speedMod);
+        Vector3 targetVelocity = dir * (5f * speedMod * _character.SpeedModifier);
         _character.Rb.linearVelocity = new Vector3(targetVelocity.x, _character.Rb.linearVelocity.y, targetVelocity.z);
 
         // Передаем скорость в Blend Tree Аниматора
