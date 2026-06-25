@@ -20,7 +20,7 @@ public abstract class StatePlayerAttack : State<PlayerView>, IAnimationState
     {
         if (eventType == AnimationEventType.AttackEnd) 
         {
-            Vector2 input = _character.moveAction.action.ReadValue<Vector2>();
+            Vector2 input = _character.MovementInput;
             if (input.sqrMagnitude > 0.001f)
                 _SM.ChangeState(new StatePlayerMove(_character, _SM));
             else

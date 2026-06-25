@@ -15,7 +15,7 @@ public class StatePlayerMove : State<PlayerView>, IPhysicsState
 
     public override void LogicUpdate()
     {
-        Vector2 input = _character.moveAction.action.ReadValue<Vector2>();
+        Vector2 input = _character.MovementInput;
         if (input.sqrMagnitude <= 0.001f)
         {
             _SM.ChangeState(new StatePlayerIdle(_character, _SM));
@@ -24,9 +24,9 @@ public class StatePlayerMove : State<PlayerView>, IPhysicsState
 
     public void PhysicsUpdate()
     {
-        _character.transform.Rotate(Vector3.up, _character.rotationAction.action.ReadValue<float>() * 2f, Space.World);
-        Vector2 input = _character.moveAction.action.ReadValue<Vector2>();
-        float speedMod = _character.shiftAction.action.IsPressed() ? 1.5f : 1f;
+        _character.transform.Rotate(Vector3.up, _character.RotationInput * 2f, Space.World);
+        Vector2 input = _character.MovementInput;
+        float speedMod = _character.IsRunning ? 1.5f : 1f;
 
         Vector3 dir = _character.transform.forward * input.y + _character.transform.right * input.x;
         if (dir.magnitude > 1f) dir.Normalize();

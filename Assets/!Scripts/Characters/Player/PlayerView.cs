@@ -76,6 +76,10 @@ public class PlayerView : MonoBehaviour, IGameOverTrigger, IHittable, IHealth, I
 
     public void DisableInput() => OnDisable();
 
+    public Vector2 MovementInput => moveAction.action.ReadValue<Vector2>();
+    public float RotationInput => rotationAction.action.ReadValue<float>();
+    public bool IsRunning => shiftAction.action.IsPressed();
+
     private void Update()
     {
         Vector2 moveDir = moveAction.action.ReadValue<Vector2>();
