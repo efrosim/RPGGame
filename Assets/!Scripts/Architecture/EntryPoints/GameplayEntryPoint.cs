@@ -103,4 +103,12 @@ public class GameplayEntryPoint : MonoBehaviour
         _playerController?.Dispose();
         _scoreboardController?.Dispose();
     }
+    public void RestartGame()
+    {
+        if (_sceneLoader != null)
+        {
+            int currentSceneIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
+            _sceneLoader.LoadScene(currentSceneIndex);
+        }
+    }
 }
