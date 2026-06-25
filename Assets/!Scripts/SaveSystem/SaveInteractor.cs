@@ -101,8 +101,16 @@ public class SaveInteractor : ISaveInteractor
                         Vector3 spawnPos = new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ);
                         Enemy spawned = UnityEngine.Object.Instantiate(prefab, spawnPos, Quaternion.identity);
 
+                        // Обязательно делаем Warp, чтобы привязать агента к NavMesh, иначе он не сдвинется с места!
+                        if (spawned.Agent != null)
+                        {
+                            spawned.Agent.Warp(spawnPos);
+                        }
+
                         spawned.SetDynamicId(savedEnemy.id);
                         spawned.SetHealth(savedEnemy.hp);
+                        
+                        Debug.Log($"[SaveInteractor] Загружен моб: {savedEnemy.id}, тип: {savedEnemy.type}, хп: {savedEnemy.hp}, текущее HP в модели: {spawned.HP}");
 
                         // Если это обычный моб (не босс) - вешаем ему оружие через фабрику
                         if (!(spawned is Boss) && _weaponFactory != null)

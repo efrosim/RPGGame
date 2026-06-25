@@ -69,12 +69,19 @@ public class HealthBar : MonoBehaviour
             if (_healthSource != null)
             {
                 _healthSource.OnHealthChanged += UpdateHealthBar;
+                Debug.Log($"[HealthBar] Нашел источник здоровья в Start для '{gameObject.name}' в родителе '{transform.parent.name}'");
+            }
+            else
+            {
+                Debug.LogWarning($"[HealthBar] Источник здоровья не найден в Start для '{gameObject.name}'");
             }
         }
 
         if (_healthSource != null) 
         {
-            UpdateHealthBar(_healthSource.GetHealthNormalized());
+            float normHealth = _healthSource.GetHealthNormalized();
+            UpdateHealthBar(normHealth);
+            Debug.Log($"[HealthBar] Обновлена полоска для '{gameObject.name}' на старте, нормализованное ХП: {normHealth}");
         }
         else
         {
