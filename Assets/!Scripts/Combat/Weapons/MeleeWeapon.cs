@@ -7,6 +7,11 @@ public class MeleeWeapon : MonoBehaviour, IWeapon
     [SerializeField] private float _hitOffset = 1f;
 
     [SerializeField] private int _maxTargets = 20;
+    
+    public Vector3 HitCube { get => _hitCube; set => _hitCube = value; }
+    public float HitOffset { get => _hitOffset; set => _hitOffset = value; }
+    public int MaxTargets { get => _maxTargets; set => _maxTargets = value; }
+
     private Collider[] _hitColliders;
 
     private IHittable _owner;

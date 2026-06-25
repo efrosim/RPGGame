@@ -13,7 +13,14 @@ public class StatePlayerMove : State<PlayerView>, IPhysicsState
         _character._animator.CrossFadeInFixedTime(LocomotionHash, CrossFadeDuration);
     }
 
-    public override void LogicUpdate() { }
+    public override void LogicUpdate()
+    {
+        Vector2 input = _character.moveAction.action.ReadValue<Vector2>();
+        if (input.sqrMagnitude <= 0.001f)
+        {
+            _SM.ChangeState(new StatePlayerIdle(_character, _SM));
+        }
+    }
 
     public void PhysicsUpdate()
     {

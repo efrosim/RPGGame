@@ -22,7 +22,11 @@ public class StatePlayerHit : State<PlayerView>
         _stunTimer += Time.deltaTime;
         if (_stunTimer >= StunDuration)
         {
-            _SM.ChangeState(new StatePlayerMove(_character, _SM));
+            Vector2 input = _character.moveAction.action.ReadValue<Vector2>();
+            if (input.sqrMagnitude > 0.001f)
+                _SM.ChangeState(new StatePlayerMove(_character, _SM));
+            else
+                _SM.ChangeState(new StatePlayerIdle(_character, _SM));
         }
     }
     

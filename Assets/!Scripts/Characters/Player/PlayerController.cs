@@ -13,7 +13,7 @@ public class PlayerController : IDisposable
         _view = view;
         _sm = new StateMachine();
 
-        _sm.ChangeState(new StatePlayerMove(_view, _sm)); 
+        _sm.ChangeState(new StatePlayerIdle(_view, _sm)); 
 
         _view.OnMoveInputEvent += HandleMoveInput;
         _view.OnPrimeAttackEvent += HandlePrimeAttack;
@@ -33,13 +33,13 @@ public class PlayerController : IDisposable
 
     private void HandlePrimeAttack()
     {
-        if (_sm._curState is StatePlayerMove)
+        if (_sm._curState is StatePlayerMove || _sm._curState is StatePlayerIdle)
             _sm.ChangeState(new StatePlayerMeleeAttack(_view, _sm));
     }
 
     private void HandleSecondAttack()
     {
-        if (_sm._curState is StatePlayerMove && _model.MagicCooldown.IsReady)
+        if ((_sm._curState is StatePlayerMove || _sm._curState is StatePlayerIdle) && _model.MagicCooldown.IsReady)
         {
             _model.MagicCooldown.StartCooldown();
             _sm.ChangeState(new StatePlayerRangeAttack(_view, _sm));
