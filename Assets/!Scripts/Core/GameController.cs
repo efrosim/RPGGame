@@ -11,6 +11,7 @@ public class GameController
     private readonly int _mainMenuIndex;
     
     private bool _isGameOver = false;
+    private readonly System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
 
     public static bool IsPeacefulMode = true;
     public int EnemyKillCount { get; private set; }
@@ -68,8 +69,15 @@ public class GameController
 
     private async Task WinSequenceAsync()
     {
-        await Task.Delay(3000);
-        _sceneLoader.LoadScene(_mainMenuIndex);
+        try
+        {
+            await Task.Delay(3000, _cts.Token);
+            _sceneLoader.LoadScene(_mainMenuIndex);
+        }
+        catch (System.OperationCanceledException)
+        {
+            // Игнорируем, так как сцена была перезагружена/выгружена
+        }
     }
 
     public async void GameLose()
@@ -80,8 +88,15 @@ public class GameController
         PauseGame();
         _restartCanvas.SetActive(true);
 
-        await Task.Delay(5000);
-        _sceneLoader.LoadScene(_mainMenuIndex);
+        try
+        {
+            await Task.Delay(5000, _cts.Token);
+            _sceneLoader.LoadScene(_mainMenuIndex);
+        }
+        catch (System.OperationCanceledException)
+        {
+            // Игнорируем, так как сцена была перезагружена/выгружена
+        }
     }
 
     public void PauseGame() 
@@ -100,6 +115,9 @@ public class GameController
 
     public void Dispose()
     {
+        _cts.Cancel();
+        _cts.Dispose();
+
         if (_trigger != null)
         {
             _trigger.OnDeadEvent -= GameLose;
