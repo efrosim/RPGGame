@@ -19,6 +19,8 @@ public class MainMenuEntryPoint : MonoBehaviour
 
     private void Start()
     {
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         _controller = new MainMenuController(_view, _audioService, _sceneLoader, _gameplaySceneIndex);
     }
 }
