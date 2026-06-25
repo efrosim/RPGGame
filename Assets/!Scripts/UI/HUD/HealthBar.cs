@@ -63,6 +63,15 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
+        if (_healthSource == null)
+        {
+            _healthSource = FindHealthSourceInParents();
+            if (_healthSource != null)
+            {
+                _healthSource.OnHealthChanged += UpdateHealthBar;
+            }
+        }
+
         if (_healthSource != null) 
         {
             UpdateHealthBar(_healthSource.GetHealthNormalized());

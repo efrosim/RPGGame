@@ -13,9 +13,13 @@ public class EnemyRange : Enemy
         AddState(new StateEnemyHit(this, _SM)); 
         AddState(new StateEnemyFlee(this, _SM));
         
-        ChangeState<StateEnemyIdle>();
-
         if(TryGetComponent(out RangeWeapon component)) Range = component;
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        ChangeState<StateEnemyIdle>();
     }
 
     public override void InitWeapon(IWeapon weapon)

@@ -63,6 +63,12 @@ public class Boss : Enemy
         ChangeState<StateBossIdle>();
     }
 
+    protected override void Start()
+    {
+        base.Start();
+        ChangeState<StateBossIdle>();
+    }
+
     private void SwitchToRandomElement()
     {
         if (_availableElements.Count == 0) return;
