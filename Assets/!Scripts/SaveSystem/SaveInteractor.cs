@@ -5,11 +5,13 @@ public class SaveInteractor : ISaveInteractor
 {
     private readonly IPlayerRepository _playerRepository;
     private readonly IEnemyRepository _enemyRepository;
+    private readonly IWeaponFactory _weaponFactory;
 
-    public SaveInteractor(IPlayerRepository playerRepository, IEnemyRepository enemyRepository)
+    public SaveInteractor(IPlayerRepository playerRepository, IEnemyRepository enemyRepository, IWeaponFactory weaponFactory)
     {
         _playerRepository = playerRepository;
         _enemyRepository = enemyRepository;
+        _weaponFactory = weaponFactory;
     }
 
     public bool HasSave() => _playerRepository.HasSave();
@@ -32,9 +34,14 @@ public class SaveInteractor : ISaveInteractor
         var enemyDataList = new EnemySaveDataList { enemies = new List<EnemySaveData>() };
         foreach (var enemy in enemiesInScene)
         {
+            string type = "Melee";
+            if (enemy is Boss) type = "Boss";
+            else if (enemy is EnemyRange) type = "Range";
+
             enemyDataList.enemies.Add(new EnemySaveData
             {
                 id = enemy.UniqueId,
+                type = type,
                 posX = enemy.transform.position.x,
                 posY = enemy.transform.position.y,
                 posZ = enemy.transform.position.z,
@@ -62,22 +69,48 @@ public class SaveInteractor : ISaveInteractor
         var enemyDataList = _enemyRepository.Load();
         if (enemyDataList != null && enemyDataList.enemies != null)
         {
+            // 1. Уничтожаем всех мобов, которые сейчас есть на сцене
             var enemiesInScene = UnityEngine.Object.FindObjectsByType<Enemy>(FindObjectsSortMode.None);
             foreach (var enemy in enemiesInScene)
             {
-                var savedEnemy = enemyDataList.enemies.Find(e => e.id == enemy.UniqueId);
-                if (savedEnemy != null)
-                {
-                    if (enemy.Agent != null)
-                        enemy.Agent.Warp(new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ));
-                    else
-                        enemy.transform.position = new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ);
+                UnityEngine.Object.Destroy(enemy.gameObject);
+            }
 
-                    enemy.SetHealth(savedEnemy.hp);
-                }
-                else
+            // 2. Находим спавнер мобов для доступа к ссылкам на префабы
+            var spawner = UnityEngine.Object.FindAnyObjectByType<EnemySpawner>();
+            if (spawner != null)
+            {
+                foreach (var savedEnemy in enemyDataList.enemies)
                 {
-                    UnityEngine.Object.Destroy(enemy.gameObject);
+                    Enemy prefab = null;
+                    if (savedEnemy.type == "Boss")
+                    {
+                        prefab = spawner.BossPrefab;
+                    }
+                    else if (savedEnemy.type == "Melee")
+                    {
+                        prefab = spawner.EnemyPrefabs.Find(p => p is EnemyMelee);
+                    }
+                    else if (savedEnemy.type == "Range")
+                    {
+                        prefab = spawner.EnemyPrefabs.Find(p => p is EnemyRange);
+                    }
+
+                    if (prefab != null)
+                    {
+                        Vector3 spawnPos = new Vector3(savedEnemy.posX, savedEnemy.posY, savedEnemy.posZ);
+                        Enemy spawned = UnityEngine.Object.Instantiate(prefab, spawnPos, Quaternion.identity);
+
+                        spawned.SetDynamicId(savedEnemy.id);
+                        spawned.SetHealth(savedEnemy.hp);
+
+                        // Если это обычный моб (не босс) - вешаем ему оружие через фабрику
+                        if (!(spawned is Boss) && _weaponFactory != null)
+                        {
+                            var weapon = _weaponFactory.EquipRandomWeapon(spawned);
+                            spawned.InitWeapon(weapon);
+                        }
+                    }
                 }
             }
         }

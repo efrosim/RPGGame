@@ -22,6 +22,7 @@ public class PlayerSaveData
 public class EnemySaveData
 {
     public string id;
+    public string type;
     public float posX, posY, posZ;
     public int hp;
 }

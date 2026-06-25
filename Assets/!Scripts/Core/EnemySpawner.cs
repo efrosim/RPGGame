@@ -9,6 +9,9 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float _spawnRadius = 20f;
     [SerializeField] private int _initialEnemies = 5;
 
+    public List<Enemy> EnemyPrefabs => _enemyPrefabs;
+    public Boss BossPrefab => _bossPrefab;
+
     private void Start()
     {
         for (int i = 0; i < _initialEnemies; i++)
